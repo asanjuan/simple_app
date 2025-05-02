@@ -20,7 +20,7 @@ class consultas_plugin extends PluginInterface {
 	public function setDefaultValues(&$datos){}
 	public function preRenderform($item, &$datos){ 
 		
-		$this->form->addCustomButton("ejecutar", "Ejecutar Query", "form");
+		//$this->form->addCustomButton("ejecutar", "Ejecutar Query", "form");
 		//$datos['query']=eval('return '. $datos["query"] );
 		//$this->showMessage("dato modificado");
 			
