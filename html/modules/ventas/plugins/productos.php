@@ -30,6 +30,19 @@ class my_new_plugin extends PluginInterface {
 		
 	}
 	public function onCustomButton($operation, $item, $datos){ 
+	    
+	    if ($operation == "test_api"){
+	        
+            $params = get_all_config();
+            $url = $params['API_CONSULTA']."?query=9";
+            $securityToken = $params['API_TOKEN']; 
+            
+            $jsonData =getRequest($url, $securityToken );
+            
+            $this->showMessage("Obtenidos " . count($jsonData));
+
+	        
+	    }
 		
 	}
 	public function postUploadFile($filedata){ $this->showMessage("postUploadFile");}
