@@ -37,6 +37,12 @@ class ConfigSingleton
 
 		return $params; //devuelve el primer elemento de ese array
 	}
+
+	public static function set_param($param, $value){
+		$q = "update config set value = '$value' where param = '$param'";
+		query($q);
+		self::$params[$param] = $value;
+	}
 }
 
 function new_guid()
@@ -57,6 +63,26 @@ function get_URL_BASE()
 	return get_config('HOME_BASE_URL');
 
 }
+
+function check_URL_BASE(){
+	$selected = get_URL_BASE();
+	$current = get_URL_index();
+
+	if ($selected != $current){
+		ConfigSingleton::set_param('HOME_BASE_URL',$current);
+	}
+}
+
+function get_URL_index() {
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
+    $host = $_SERVER['HTTP_HOST'];
+    $script = $_SERVER['SCRIPT_NAME']; // por ejemplo: /miproyecto/index.php
+    $path = rtrim(dirname($script), '/\\');
+    return "$protocol://$host$path/";
+}
+
+
+
 
 function build_URL_Controller_search($controller)
 {

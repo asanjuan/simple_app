@@ -10,7 +10,7 @@ include_once 'classes/security_manager.php';
 include_once 'classes/report_manager.php';
 
 login_test();
-
+check_URL_BASE();
 		
 function print_menu(){
 	ob_start();

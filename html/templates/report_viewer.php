@@ -16,7 +16,7 @@
 <!--div class="button-container"-->
     <!--div class="left-buttons"-->
 	<input type="hidden" name="operation" id="operation" value="pdf">
-        <button class="boton-enlace" onclick="location.reload();"><img src="templates/img/refresh.svg" class="form-icon" />Actualizar</button>
+        <button type = "button" class="boton-enlace" onclick="window.location.href = window.location.href;"><img src="templates/img/refresh.svg" class="form-icon" />Actualizar</button>
 		<button type = "submit" class="boton-enlace" > PDF</button>
 
 </div>
