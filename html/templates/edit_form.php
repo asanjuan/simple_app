@@ -17,7 +17,7 @@ foreach ($this->messages as $msg ){
 
 		<input type="hidden" name="operation" id="operation" value="">
 			<a href="back_history.php" class="boton-enlace"><i class="fas fa-arrow-left"></i>  <span> Atr&aacute;s </span></a>
-			<button class="boton-enlace" onclick="location.reload();"> <i class="fa-solid fa-arrows-rotate"></i> <span> Actualizar </span></button>
+			<button type="button" class="boton-enlace" onclick="reloadPage()"> <i class="fa-solid fa-arrows-rotate"></i> <span> Actualizar </span></button>
 			
 			<?php if ($this->access_update) { ?>
 			<button type="submit" class="boton-enlace" name="operation" value="guardar"> <i class="fa-solid fa-floppy-disk"></i> <span>Guardar</span></button> 

@@ -1,6 +1,6 @@
 <?php
 
-class Form_Subgrid extends RestApi {
+class Image_Action extends RestApi {
 	
 	protected function ExecutePost($data){
     }

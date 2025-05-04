@@ -29,8 +29,9 @@ define( '__DEBUGREQUEST__', false);
 
 function print_debug_request(){
 	if ( __DEBUGREQUEST__ ) {
-		
+		trace("GET");
 		dump($_GET);
+		trace("POST");
 		dump($_POST);
 	}	
 }
