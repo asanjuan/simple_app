@@ -1,0 +1,7 @@
+{
+	"enableCors" : false,
+	"enabledList" : [
+		"http://example.com",
+		"http://www.example2.com",
+	]
+}

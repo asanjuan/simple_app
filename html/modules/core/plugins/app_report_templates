@@ -1,0 +1,48 @@
+<?php 
+
+PluginManager::RegisterPlugin(new my_new_plugin_report());
+
+class my_new_plugin_report extends PluginInterface {
+	
+	protected $data; //use it at will between related events
+	
+	public function postUpdate($item, $datos){ }
+	public function postInsert($item, $datos){ }
+	public function preDuplicate($item, &$datos){ }
+	public function postDuplicate($item, $new_item){
+	    
+	    $r = dbgetbyid("app_report_templates",$new_item);
+	    
+	    $r["nombre"] = $r["nombre"]." copy";
+	    dbupdate("app_report_templates",$r);
+	    
+	    
+	    //duplicamos Vistas
+		$data = query("SELECT * FROM app_report_queries where id_template=".quote($item));
+		foreach ($data as $v) {
+		    // code...
+		    $v['id_template'] = $new_item;
+		    $v['id']='';
+		    dbinsert('app_report_queries', $v);
+		}
+		
+		
+	    
+	}
+	
+	public function customContent($item){ 	}
+	
+	public function setDefaultValues(&$datos){  }
+	
+	public function preRenderform($item, &$datos){ 
+		
+	}
+	public function onCustomButton($operation, $item, $datos){ 
+		
+	}
+	public function postUploadFile($file){ $this->showMessage("postUploadFile");}
+	
+	public function preDelete($item){ }
+	public function postDelete($item){ }
+
+}

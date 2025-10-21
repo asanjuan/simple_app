@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Procesar CSV y convertir a JSON</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input { margin-bottom: 10px; }
+    table { border-collapse: collapse; margin-top: 1em; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 6px 10px; vertical-align: top; }
+    th { background: #eee; }
+    pre { background: #f7f7f7; border: 1px solid #ccc; padding: 10px; margin-top: 20px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Procesar CSV avanzado (solo con JavaScript)</h1>
+  <input type="file" id="csvFile" accept=".csv">
+  <table id="table"></table>
+  <h2>Resultado en JSON</h2>
+  <pre id="jsonOutput"></pre>
+
+  <script>
+    const input = document.getElementById('csvFile');
+    const table = document.getElementById('table');
+    const jsonOutput = document.getElementById('jsonOutput');
+
+    input.addEventListener('change', () => {
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = e => {
+        const text = e.target.result;
+        const data = parseCSVAdvanced(text);
+        renderTable(data);
+        renderJSON(data);
+      };
+      reader.readAsText(file);
+    });
+
+    // --- Parser CSV avanzado ---
+    function parseCSVAdvanced(text) {
+      let separador = ';';
+      const rows = [];
+      let row = [];
+      let current = '';
+      let insideQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"' && insideQuotes && next === '"') {
+          current += '"'; // comilla escapada ("")
+          i++;
+        } else if (char === '"') {
+          insideQuotes = !insideQuotes;
+        } else if (char === separador && !insideQuotes) {
+          row.push(current);
+          current = '';
+        } else if ((char === '\n' || char === '\r') && !insideQuotes) {
+          if (current || row.length) {
+            row.push(current);
+            rows.push(row);
+            row = [];
+            current = '';
+          }
+          if (char === '\r' && next === '\n') i++; // salto de línea Windows
+        } else {
+          current += char;
+        }
+      }
+
+      if (current || row.length) {
+        row.push(current);
+        rows.push(row);
+      }
+
+      return rows;
+    }
+
+    // --- Mostrar tabla ---
+    function renderTable(data) {
+      table.innerHTML = '';
+      if (!data.length) return;
+
+      const headers = data[0];
+      const thead = document.createElement('tr');
+      headers.forEach(h => {
+        const th = document.createElement('th');
+        th.textContent = h;
+        thead.appendChild(th);
+      });
+      table.appendChild(thead);
+
+      for (let i = 1; i < data.length; i++) {
+        const tr = document.createElement('tr');
+        data[i].forEach(cell => {
+          const td = document.createElement('td');
+          td.textContent = cell;
+          tr.appendChild(td);
+        });
+        table.appendChild(tr);
+      }
+    }
+
+    // --- Convertir a JSON ---
+    function renderJSON(data) {
+      if (data.length < 2) {
+        jsonOutput.textContent = '[]';
+        return;
+      }
+
+      const headers = data[0];
+      const json = data.slice(1).map(row => {
+        const obj = {};
+        headers.forEach((h, i) => {
+          obj[h] = row[i] ?? '';
+        });
+        return obj;
+      });
+
+      jsonOutput.textContent = JSON.stringify(json, null, 2);
+    }
+  </script>
+</body>
+</html>
