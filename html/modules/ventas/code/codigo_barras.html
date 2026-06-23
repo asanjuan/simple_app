@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Leer códigos de barras con cámara</title>
+
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" type="text/javascript"></script>
+  
+  <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", onload);
+
+
+    function onload(){
+        
+        debugger;
+        function onScanSuccess(decodedText, decodedResult) {
+        // handle the scanned code as you like, for example:
+            alert(`Code matched = ${decodedText}`);
+        }
+        
+        function onScanFailure(error) {
+        // handle scan failure, usually better to ignore and keep scanning.
+        // for example:
+            console.warn(`Code scan error = ${error}`);
+        }
+        
+        
+        const reader = document.getElementById("reader");
+
+        const size = Math.min(
+            reader.clientWidth,
+            window.innerHeight
+        ) * 0.7;
+        
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader",
+            { fps: 1000, qrbox: {width: size, height: size} },
+            /* verbose= */ false);
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+        
+    }
+    
+    
+    
+</script>
+</head>
+<body>
+  
+  <div id="reader" ></div>
+  
+  <script>
+    
+  </script>
+  
+</body>
+</html>
