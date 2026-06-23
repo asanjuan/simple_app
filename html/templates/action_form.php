@@ -8,7 +8,7 @@
 <!--div class="button-container"-->
     <!--div class="left-buttons"-->
 	<input type="hidden" name="operation" id="operation" value="">
-        <a href="back_history.php" class="boton-enlace"><img src="templates/img/flecha-circulo-izquierda.svg" class="form-icon" /> Atr&aacute;s</a>
+        <button type="button" class="boton-enlace" onclick="goBack()"> <i class="fas fa-arrow-left"></i>  <span>  Atr&aacute;s </span></button>
 		<button class="boton-enlace" onclick="location.reload();"><img src="templates/img/refresh.svg" class="form-icon" />Actualizar</button>
 			
 		<?php 

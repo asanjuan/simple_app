@@ -51,7 +51,18 @@ class FormManager {
 	}
 	
 	public static function GetAreas($form_id){
-		$data = query("SELECT * FROM app_form_areas WHERE id_form = ".quote($form_id) . " order by orden");
+		$data = query("SELECT * FROM app_form_areas WHERE id_form = ".quote($form_id) . " and id_tab is null order by orden");
+		
+		return $data;
+	}
+	public static function GetAreasFromTabs($id_tab){
+		$data = query("SELECT * FROM app_form_areas WHERE id_tab = ".quote($id_tab) . " order by orden");
+		
+		return $data;
+	}
+
+	public static function GetTabs($form_id){
+		$data = query("SELECT * FROM app_form_tabs WHERE id_form = ".quote($form_id) . " order by orden");
 		
 		return $data;
 	}
@@ -77,6 +88,34 @@ class FormManager {
 		foreach($areadata as $area){
 			$html .= FormManager::PrintArea($area,$estructura, $datos, $form_enabled);
 		}
+
+		$tabs = FormManager::GetTabs($formdata['id']);
+		if (count($tabs)>0){
+			$html .= '<div class="tabs">';
+			$is_active = "active";
+			foreach($tabs as $tab){
+				
+				$html .= '<div class="tab ' . $is_active . '" data-tab="'.$tab['id'].'">'.$tab['nombre'].'</div>';
+				$is_active = "";
+
+			}
+			$html .= '</div>';
+			
+			$is_active = "active";
+			//contenido de las tabs
+			foreach($tabs as $tab){
+				
+				
+				$areas_from_tab = FormManager::GetAreasFromTabs($tab['id']);
+				$html .= '<div class="tab-content ' . $is_active . '" id="'.$tab['id'].'">';
+				foreach($areas_from_tab as $area){
+					$html .= FormManager::PrintArea($area,$estructura, $datos, $form_enabled);
+				}
+				$html .= '</div>';
+				$is_active = "";
+			}
+		}
+
 
 		return $html;
 
@@ -122,7 +161,7 @@ class FormManager {
 			}else if ($tipo=='view' && $datos['id'] != ''){
 				
 				if ($lbl != ''){
-					$html .= '<label style="display:block;font-weight:bold;padding-top:20px;" >'.$lbl.'</label>';
+					$html .= '<label style="display:block;font-weight:bold;" >'.$lbl.'</label>';
 				}
 				
 				
@@ -130,9 +169,18 @@ class FormManager {
 			}else if ($tipo=='graph' && $datos['id'] != ''){
 				
 				if ($lbl != ''){
-					$html .= '<label style="display:block;font-weight:bold;padding-top:20px;" >'.$lbl.'</label>';
+					$html .= '<label style="display:block;font-weight:bold;" >'.$lbl.'</label>';
 				}
+				$html .= '<div class="formcontrol '.$item_list['width'].'" style="height:'.$item_list['height'].'px">';
 				$html .= print_graphic($graph_id , $view_column_rel , $datos['id'], $lbl);
+				$html .= '</div>';
+			
+			}else if ($tipo=='resource' && $item_list['id_resource'] != '' ){
+
+				$file = FormManager::getResourceItem($item_list['id_resource']);
+				$html .= '<div class="formcontrol '.$item_list['width'].'">';
+				$html .= '<iframe src="'.$file.'" frameBorder="0" width="100%" height="'.$item_list['height'].'px"></iframe>' ;
+				$html .= '</div>';
 			}
 			
 		}
@@ -151,6 +199,17 @@ class FormManager {
 		
 	}
 	
+	public static function getResourceItem($id_resource){
+		$file = "";
+		$res = dbgetbyid("app_plugin_library",$id_resource);
+		
+		if ($res){
+			$module = dbgetbyid("app_modules",$res['id_module']);
+			$folder = $module['folder'];
+			$file = "./modules/".$folder."/code/".$res['filename'];
+		}
+		return $file;
+	}
 	
 	
 }
@@ -177,6 +236,7 @@ function generate_field($campo, $datos, $mostrar_calculados , $controldata) {
 	//tomamos datos del POST para refrescar los datos
 	$html = "";
 	$width = $controldata['width'];
+	$height = $controldata['height'];
 
 	$val = (isset($datos[$campo["dbcolumn"]]) ? $datos[$campo["dbcolumn"]] : $campo["value"] );
 	if ($mostrar_calculados && $campo["type"] == "calc" && isset($campo["formula"]) && $campo["formula"] != ''){
@@ -226,7 +286,8 @@ function generate_field($campo, $datos, $mostrar_calculados , $controldata) {
 						$html .= '<input '.$disabled.' '.$required.'   type="datetime-local"  id="'.$campo["dbcolumn"].'" name="'.$campo["dbcolumn"].'" value="'.$val.'"/>';
 						break;
 					case "password":
-						$html .= '<input '.$disabled.' '.$required.'  type="password" maxlength="'.$campo["max"].'" id="'.$campo["dbcolumn"].'" name="'.$campo["dbcolumn"].'" />';
+					case "secret":
+						$html .= '<input '.$disabled.' '.$required.'  type="password" maxlength="'.$campo["max"].'" id="'.$campo["dbcolumn"].'" name="'.$campo["dbcolumn"].'"  autocomplete="new-password" />';
 						break;
 					case "color":
 						$html .= '<input '.$disabled.' '.$required.'  type="color" id="'.$campo["dbcolumn"].'" name="'.$campo["dbcolumn"].'" value="'.$val.'"/>';
@@ -250,13 +311,20 @@ function generate_field($campo, $datos, $mostrar_calculados , $controldata) {
 					case "option":
 						$html .= '<select id="'.$campo["dbcolumn"].'" name="'.$campo["dbcolumn"].'" '.$disabled.' '.$required.' >';
 						$html .= '<option value=""> - - - </option>';
-						foreach ($campo["options"] as $opt){
+						
+						$opt_list = $campo["options"];
+						if (isset($campo["formula"]) && !isset($campo["dominio"])){
+							$opt_list = calcular_formula_options($campo["formula"], $datos);
+						}
+
+						foreach ($opt_list as $opt){
 							$selected = "";
 							if ($opt["value"]== $val) $selected = "selected";
 							$html .= '<option value="'.$opt["value"].'" '.$selected.'>'.$opt["description"].'</option>';
 						}
 						$html .= '</select>';
 						break;
+					
 					case "lookup":
 						$desc_actual = get_lookup_desc($val, $campo["lookup_table"], $campo["lookup_column"],  $campo["lookup_description"]);
 						if (!isset($campo["lookup_controller"])) $campo["lookup_controller"] = $campo["lookup_table"]; // por defecto, por si acaso
@@ -292,7 +360,12 @@ function generate_field($campo, $datos, $mostrar_calculados , $controldata) {
 						break;
 					case "richtext":
 					
-						$html .= '<textarea class="richtext" data-enabled="'.$locked.'" '.$disabled.' '.$required.'  id="'.$campo["dbcolumn"].'" name="'.$campo["dbcolumn"].'" >' .$val. '</textarea>'; 
+						$html .= '<textarea class="richtext" data-enabled="'.$locked.'" '.$disabled.' '.$required.'  id="'.$campo["dbcolumn"].'" name="'.$campo["dbcolumn"].'" data-height="'.$height.'" >' .$val. '</textarea>'; 
+
+						break;
+					case "richtext_simple":
+					
+						$html .= '<textarea class="richtext_simple" data-enabled="'.$locked.'" '.$disabled.' '.$required.'  id="'.$campo["dbcolumn"].'" name="'.$campo["dbcolumn"].'" data-height="'.$height.'" >' .$val. '</textarea>'; 
 
 						break;
 				}	

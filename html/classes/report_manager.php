@@ -23,6 +23,7 @@ class TemplateEngine {
         $output = $this->processVariables($output);
 
         return $output;
+        
     }
 
     protected function processVariables($template) {

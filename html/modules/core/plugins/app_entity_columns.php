@@ -26,8 +26,12 @@ class app_entities_plugin extends PluginInterface {
 				$table_name = $entity['entity'];
 				$col_name = $datos['dbcolumn'];
 				$type = EntityManager::getDBtype($datos['type'], $datos['max']);
+				$default = $datos['value'];
 				
 				$sql = "alter table $table_name add column $col_name $type NULL";
+				if ($default != ""){
+				    $sql .= " DEFAULT " . quote($default, $type);
+				}
 				//trace($sql);
 				query($sql);
 				

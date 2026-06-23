@@ -3,7 +3,8 @@
 class SecurityManager {
 
 	private static $is_admin = null;
-
+	private static $companies = [];
+	
 	public static function GetEntityPermission($entity_id,$user_id){
 		$q = "select pe.id_entity, max(read_access) as read_access, max(write_access) as write_access, max(insert_access) as insert_access, max(delete_access) as delete_access 
 				from 
@@ -60,7 +61,23 @@ class SecurityManager {
 		}
 		return self::$is_admin;
 	}
-	
+
+	public static function getUserCompanies($user_id){
+		//singleton
+		if (empty(self::$companies )){
+			
+		
+			$q = "select distinct e.id, e.empresa 
+				from app_empresas_usuarios eu 
+				left join app_empresas e on eu.id_empresa = e.id
+				where eu.id_usuario = '$user_id'";
+
+			self::$companies = query($q);
+						
+		}
+		return self::$companies;
+	}
+
 	
 }
 

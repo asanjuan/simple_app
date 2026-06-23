@@ -1,6 +1,6 @@
 <?php
-//modo de depuracion de errores
-//error_reporting(E_WARNING | E_ERROR);
+
+
 try {
     session_start();
 } catch (Exception $e) {
@@ -41,3 +41,6 @@ function dump($var){
 	var_dump($var);
 	echo "</pre>";
 }
+
+// Define your cypher key here
+define( '__CYPHERKEY__', 'VblOSfDHjAHYaxhiWVyAgTbKACEkzKyvZrnmHGqPhknjROlIjd'); 

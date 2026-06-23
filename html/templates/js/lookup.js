@@ -19,7 +19,8 @@ function openLookup(id_codigo, id_descripcion, page) {
     //debugger;
     grid = document.getElementById("lookup_grid");
 	field = document.getElementById(id_codigo);
-  document.getElementById('modal_lookup').style.display = 'block';
+  document.getElementById('modal_lookup').style.display = 'flex';
+  //document.getElementById('modal_lookup').classList.add('visible');
 
     url = "forms/lookup.php";
     datafield = field.getAttribute("data-field");
@@ -152,3 +153,5 @@ var linksPaginacion = grid.querySelectorAll("a.btn-search");
   addSortingTable(id_tabla);
   
 }
+
+

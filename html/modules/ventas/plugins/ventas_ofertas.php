@@ -1,14 +1,19 @@
 <?php 
 
-PluginManager::RegisterPlugin(new my_new_plugin());
+
+
+PluginManager::RegisterPlugin(new my_new_plugin());	    
 
 class my_new_plugin extends PluginInterface {
 	
 	protected $data; //use it at will between related events
 	
-	public function postUpdate($item, $datos){ }
+	public function postUpdate($item, $datos){ 
+	    
+	    
+	}
 	public function postInsert($item, $datos){ 
-	    $datos['codigo'] = nextSequence("ventas_ofertas");
+	    $datos['codigo'] = nextSequence("ventas_ofertas",date("Y"));
 	    $datos['estado'] =0; //borrador 
 	    
 	    $hoy = new DateTime();
@@ -19,7 +24,10 @@ class my_new_plugin extends PluginInterface {
 	    $datos['id']= $item;
 	    dbupdate("ventas_ofertas", $datos);
 	}
-	public function preDuplicate($item, &$datos){ }
+	public function preDuplicate($item, &$datos){ 
+	    $datos['codigo'] = null;
+	    $datos['status'] = 1;
+	}
 	public function postDuplicate($item, $new_item){ 
 	    
 	    //duplicamos Columnas
@@ -32,16 +40,33 @@ class my_new_plugin extends PluginInterface {
 		}
 	    
 	}
+	
 	public function postTransition($item, $trans){
-	   /* 
-	    $r = array();
-	    $r['id']= $item;
-	    $r['notas'] = json_encode($trans);
-	    dbupdate("ventas_ofertas", $r);
-	    */
+	    
+	    $lib = EntityManager::GetLibraryFile("ventas_lib.php");
+
+        if (!empty($lib)){
+            include_once('../'.$lib[0]);
+            
+        }
+        
+	    dump ('class exists al ejecutar plugin :'.class_exists('BL_Ventas'));
+	    try{
+	        
+    	    if ($trans['nombre']=="Confirmar Pedido"){
+    	        
+    	        BL_Ventas::Confirmar_Oferta($item);
+    	        
+    	    }
+	    
+	    }catch(Exception $err){
+	        echo json_encode($err);
+	    }
 	    
 	}
-	public function customContent($item){ 	}
+	public function customContent($item){ 
+
+	}
 	
 	public function setDefaultValues(&$datos){  }
 	

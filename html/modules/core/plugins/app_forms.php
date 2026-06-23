@@ -12,9 +12,9 @@ class my_new_plugin extends PluginInterface {
 	public function postDuplicate($item, $new_item){ }
 	
 	public function customContent($item){ 
-		$html = "<h3>Areas</h3>";
-		$html .= print_grid('44F547C359298694C704DEE48FA6BCCB' , "id_form", $item,"");
-		return $html;
+		//$html = "<h3>Areas</h3>";
+		//$html .= print_grid('44F547C359298694C704DEE48FA6BCCB' , "id_form", $item,"");
+		//return $html;
 	}
 	
 	public function setDefaultValues(&$datos){  }
@@ -24,9 +24,13 @@ class my_new_plugin extends PluginInterface {
 	}
 	public function onCustomButton($operation, $item, $datos){ 
 		if ($operation == "configure" ){
+		    //dump($datos);
+		    //trace($item);
 			try{
-				$r = ["id" => $item, "filas" =>$datos["filas"], "columnas" =>$datos["columnas"] ];
-				dbupdate("app_forms",$r);
+				//$r = ["id" => $item, "filas" =>$datos["filas"], "columnas" =>$datos["columnas"] ];
+				//dbupdate("app_forms",$r);
+				$datos = dbgetbyid("app_forms",$item);
+				//dump($datos);
 				$id_entity = $datos["id_entity"];
 				$metadatos = EntityManager::GetEntityById($id_entity);
 				$nombre_entidad = $metadatos['entity'];

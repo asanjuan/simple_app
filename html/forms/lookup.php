@@ -8,6 +8,8 @@ include_once '../database.php';
 include_once '../classes/entity_manager.php';
 include_once '../classes/loginmanager.php';
 include_once '../classes/utility_traits.php';
+include_once '../classes/security_manager.php';
+
 
 
 
@@ -68,6 +70,7 @@ var filtro = {
 				
 		
 		$metadata = EntityManager::GetEntity($data['table']);
+		$estructura = EntityManager::GetEstructura($metadata['entity']);
 		
 		$this->view_list = EntityManager::GetVistasLookup($metadata['id']);
 		$this->view_id_selected = $this->view_list[0]['id'];
@@ -85,6 +88,26 @@ var filtro = {
 		$sql = $obj['query'];
 		$search_fields = $obj['search_fields'];
 		
+
+		$opt_list = SecurityManager::getUserCompanies($_SESSION['userid']);
+		$list = [];
+		foreach ($opt_list as $opt) {
+			$list [] = quote($opt["id"]);
+		}
+		$filtro_empresas = implode(",",$list);
+		
+		//determinar la seguridad por empresa
+		$company_field = EntityManager::GetCompanyColumn($estructura);
+		if ($company_field && isset($_SESSION['company'])){
+			$sql =  appendcondition($sql, $company_field['dbcolumn'] . " in ($filtro_empresas) ");
+		}
+
+		//filtrar si se trata de la misma entidad de empresas, que aparezcan solamente las empresas a las que el usuario tiene acceso
+		 if ($metadata['entity'] == "app_empresas" ){
+
+			$sql =  appendcondition($sql, "id in ($filtro_empresas) ");
+		}
+
 		if ($search_fields != "" && $search_text != ""){
 			$filters = explode(",", $search_fields);
 			$search_condition = "";
@@ -96,7 +119,6 @@ var filtro = {
 			$sql =  appendcondition($sql, $search_condition);
 
 		}
-		
 		$this->this_controller = $metadata['entity'];
 		$this->campo_principal = $metadata['campo_principal'];
 		$this->key_field = "id";

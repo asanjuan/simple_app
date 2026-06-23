@@ -58,7 +58,7 @@
 			if (count($this->reports)>0){
 				$html = '<div class="rpt-dropdown boton-enlace "> <span >Seleccionar Informe ▼</span> <div class="rpt-dropdown-content">';
 				foreach ($this->reports as $rpt){
-					$html .= '<a href="/reportviewer.php?template_id='.$rpt['id'].'&item='.$item.'" target="_blank">'.$rpt['nombre'].'</a>';
+					$html .= '<a href="#" onclick="abrirModal(\'reportviewer.php?template_id='.$rpt['id'].'&item='.$item.'\',\'Report viewer\')" >'.$rpt['nombre'].'</a>';
 				}
 				$html .= '</div></div>';
 				echo $html;

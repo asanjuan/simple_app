@@ -17,16 +17,17 @@ document.addEventListener("DOMContentLoaded", function () {
 function preventFormIntro(){
 
 	var form = document.getElementById("form_edit");
-	var inputs = form.querySelectorAll("input");
-	inputs.forEach(function(campotexto) {
-		
-		campotexto.addEventListener("keydown", function (event) {
-			if (event.key === "Enter") {
-				event.preventDefault(); // Evita que el formulario se envíe
-			}
+	if (form){
+		var inputs = form.querySelectorAll("input");
+		inputs.forEach(function(campotexto) {
+			
+			campotexto.addEventListener("keydown", function (event) {
+				if (event.key === "Enter") {
+					event.preventDefault(); // Evita que el formulario se envíe
+				}
+			});
 		});
-	});
-
+	}
 }
 
 function eventosLimpiarImagen(){
@@ -267,7 +268,7 @@ function cargarPaginaSubgrid(grid, page) {
 }
 
 
-function borrarRegistros(grid) {
+async function borrarRegistros(grid) {
 
 	let data_array = [];
 
@@ -282,7 +283,7 @@ function borrarRegistros(grid) {
 
 	if (data_array.length > 0) {
 
-		if (confirm("¿Desea eliminar los registros seleccionados?")) {
+		if (await MyApp.ui.confirm("¿Desea eliminar los registros seleccionados?")) {
 
 			mostrarModal("Eliminando...");
 			url = grid.getAttribute("data-gridurl");
@@ -336,7 +337,7 @@ function borrarRegistros(grid) {
 }
 
 
-function sendCustomOperation(grid, operation) {
+async function sendCustomOperation(grid, operation) {
 	let data_array = [];
 
 	//debugger;
@@ -350,7 +351,7 @@ function sendCustomOperation(grid, operation) {
 
 	if (data_array.length > 0) {
 
-		if (confirm("¿Desea aplicar la operación a los registros seleccionados?")) {
+		if (await MyApp.ui.confirm("¿Desea aplicar la operación a los registros seleccionados?")) {
 
 			mostrarModal("Ejecutando...");
 			url = grid.getAttribute("data-gridurl");
@@ -405,7 +406,7 @@ function sendCustomOperation(grid, operation) {
 }
 
 
-function duplicarRegistros(grid) {
+async function duplicarRegistros(grid) {
 
 	let data_array = [];
 
@@ -420,7 +421,7 @@ function duplicarRegistros(grid) {
 
 	if (data_array.length > 0) {
 
-		if (confirm("¿Desea duplicar los registros seleccionados?")) {
+		if (await MyApp.ui.confirm("¿Desea duplicar los registros seleccionados?")) {
 
 			mostrarModal("Duplicando...");
 			url = grid.getAttribute("data-gridurl");

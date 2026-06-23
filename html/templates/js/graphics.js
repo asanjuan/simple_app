@@ -66,6 +66,7 @@ document.addEventListener("DOMContentLoaded", function() {
             data: graphic_data,
             options: {
                responsive: true,
+               maintainAspectRatio: false,
                 plugins: {
                     title: {
                         display: true,
@@ -75,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
         
-        //console.log(cfg);
+        console.log(cfg);
         
         let draw = new Chart(canvas, cfg);
      

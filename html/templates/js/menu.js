@@ -1,5 +1,14 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+	const sidebar1 = document.querySelector('.sidebar');
+    const sidebarHidden1 = sessionStorage.getItem('sidebarHidden');
+
+    if (sidebarHidden1 === '1') {
+        sidebar1.classList.add('hidden'); //lo muestra oculto
+    }else {
+		sidebar1.classList.toggle('hidden'); //muestra el sidebar. Por defecto, desde servidor se envía oculto.
+	}
+	
     // Agregar funcionalidad para desplegar/ocultar submenús
     const submenuItems = document.querySelectorAll('.has-submenu');
     submenuItems.forEach(item => {
@@ -18,5 +27,8 @@ document.addEventListener("DOMContentLoaded", function () {
         options.classList.toggle('active');
         sidebar = document.querySelector('.sidebar');
         sidebar.classList.toggle('hidden');
+		// Guardar estado
+		const isHidden = sidebar.classList.contains('hidden');
+		sessionStorage.setItem('sidebarHidden', isHidden ? '1' : '0');
     });
 });

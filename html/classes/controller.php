@@ -196,12 +196,22 @@ class Controller {
 						
 						if ( $campo["type"] != "calc" && 
 							$campo["type"] != "file" && 
+							$campo["type"] != "password" && 
+							$campo["type"] != "secret" && 
 							//$campo["dbcolumn"] != $this->key_field &&  
 							empty($campo["disabled"])
 							&& isset($_POST[$campo["dbcolumn"]])
 							){
-							$r[$campo["dbcolumn"]] = mask($_POST[$campo["dbcolumn"]], $campo["type"]);
+							$r[$campo["dbcolumn"]] = $_POST[$campo["dbcolumn"]];
+
+						}else  if ($campo["type"] == "password" && isset($_POST[$campo["dbcolumn"]]) && $_POST[$campo["dbcolumn"]] != "" ){
+							
+							$r[$campo["dbcolumn"]] =  md5($_POST[$campo["dbcolumn"]]);
+						
+						}else if ($campo["type"] == "secret" && isset($_POST[$campo["dbcolumn"]]) && $_POST[$campo["dbcolumn"]] != "" ){
+							$r[$campo["dbcolumn"]] =  cypherMessageAES($_POST[$campo["dbcolumn"]],__CYPHERKEY__);
 						}
+
 					}
 					
 					if (isset($r["id"]) && $r["id"]!= ""){
@@ -258,9 +268,22 @@ class Controller {
 			include $template_name ;
 				
 		}else {
+
+			//entramos aquí cuando el formulario está en modo ALTA
+			//lo primero es tratar la seguridad de la columna empresa.
+			
+			
+
+
 			$datos = array();
 			if ($this->entity_type == "table")
 				$datos = dbgetbyid($this->db_table,$item);
+
+			$company_field = EntityManager::GetCompanyColumn($this->estructura);
+			if (isset($_GET["new"]) && $company_field != null && isset($_SESSION['company'])){
+				$datos[$company_field['dbcolumn']] = $_SESSION['company'];
+			}
+
 			//alta con datos relacionados
 			if(isset($_GET["new"]) && isset($_GET["parent_column"])){
 				

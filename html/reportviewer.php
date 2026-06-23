@@ -39,24 +39,48 @@ foreach ($consultas as $consulta) {
 }
 
 $engine = new TemplateEngine($template['template']);
+$content = $engine->render($data);
+
 //estilos básicos para tablas y ancho del informe. De momento solo formato vertical.
 $reportcontent = "
-    <html>
-      <head>
-        <style>
-          body { max-width:800px; font-family: Arial; background-color:white;padding:20px; font-size:10px; }
-		  td {padding:8px;min-height:48px;}
-		  @media print {
-			table td {
-				-webkit-print-color-adjust: exact !important; /* Chrome, Edge, Safari */
-				print-color-adjust: exact !important;        /* Estándar */
-
+	<html>
+		<head>
+		<style>
+			body {
+			font-family: Arial, sans-serif;
+			background-color: #fff;
+			padding: 20px;
 			}
+			td, th {
+			border: none;	
+			padding: 8px;
+			}
+			@media print {
+				body {
+					transform: scale(1) !important;
+					zoom: 1 !important;
+				}
+				pagebreak {
+					break-after: page;
+				}
+				* {
+					-webkit-print-color-adjust: exact !important;
+					print-color-adjust: exact !important;
+				}
+			}
+		</style>
+		<script>
+		window.addEventListener(\"message\", (event) => {
+		console.log(\"Received message: \", event.data);
+		if (event.data.type === \"zoom\") {
+			console.log(\"Zooming to: \" + event.data.value);
+			document.body.style.zoom = event.data.value;
 		}
-        </style>
-      </head>
-      <body>" . $engine->render($data) . "</body>
-    </html>";
+		});
+		</script>
+		</head>
+		<body>" . $content . "</body>
+	</html>";
 //$reportcontent =   $engine->render($data) ;
 //
 //dump ($_POST);
@@ -65,9 +89,11 @@ if ($_POST['operation'] == "pdf") {
 	$mpdf = new \Mpdf\Mpdf(['tempDir' => __DIR__ . '/tmp']);
 
 	$mpdf->WriteHTML($reportcontent);
+	$mpdf->curlAllowUnsafeSslRequests = true;
 	$mpdf->setFooter('Página {PAGENO} de {nbpg}');
 	$mpdf->Output($template['nombre'] . '.pdf', 'D');
 } else {
+	//echo $reportcontent;
 	include('templates/report_viewer.php');
 }
 //include ('templates/main_tailwind.php');

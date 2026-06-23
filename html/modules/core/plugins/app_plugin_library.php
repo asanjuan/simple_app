@@ -7,7 +7,9 @@ class app_entities_plugin extends PluginInterface {
 	
 	public function postUpdate($item, $datos){}
 	public function postInsert($item, $datos){ }
-	public function preDuplicate($item, &$datos){ }
+	public function preDuplicate($item, &$datos){ 
+	    $datos['filename'] = 'copy_'. $datos['filename'];
+	}
 	public function postDuplicate($item, $new_item){ }
 	
 	public function customContent($item){ 
@@ -54,6 +56,7 @@ class app_entities_plugin extends PluginInterface {
 				$directorio = "modules/".$module['folder']."/code";
 				$filename = $directorio."/".$fichero;
 				
+				//ok
 				$content = file_get_contents($filename);
 				
 				$r = ["id"=> $item, "code" => $content]; //guardamos tipo fichero y su codigo

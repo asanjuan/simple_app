@@ -1,3 +1,19 @@
+document.addEventListener("keydown", function(e) {
+
+    if (e.ctrlKey && e.key.toLowerCase() === "s") {
+        e.preventDefault(); // evita "Guardar página del navegador"
+
+		var op = document.getElementById('operation');
+		if (op){
+			op.value = 'guardar';
+			const formulario = document.getElementById('form_edit');
+			if (formulario) formulario.requestSubmit();
+		}
+    }
+
+});
+
+
 function reloadPage(){
 	window.location.reload();
 }
@@ -5,16 +21,13 @@ function reloadPage(){
 
 function confirmarYRedirigir(msg,url) {
   // Mostrar cuadro de diálogo de confirmación
-  var confirmacion = confirm(msg);
-
-  // Comprobar el resultado de la confirmación
-  if (confirmacion) {
-	// El usuario hizo clic en "Aceptar", redirigir a la URL especificada
-	window.location.href = url;
-  } else {
-	// El usuario hizo clic en "Cancelar", no hacer ninguna redirección
-	//console.log("Redirección cancelada");
-  }
+	MyApp.ui.confirm(msg).then(confirmacion => {
+		if (confirmacion) {
+			// El usuario hizo clic en "Aceptar", redirigir a la URL especificada
+			window.location.href = url;
+		}
+	});
+  
 }
 
 function confirmarEnvio(event) {
@@ -38,6 +51,33 @@ function ocultarModal() {
 	document.getElementById("modal").style.display = "none";
 }
 
+
+
+function openAlert(titulo, mensaje){
+	var myconfirm = document.getElementById("modal_alert_confirm");
+	document.getElementById("modal-alert-title").innerHTML = titulo;
+	document.getElementById("modal-alert-text").innerHTML = mensaje;
+	document.getElementById("btn-confirm-cancel").style.display = "none";
+	myconfirm.style.display = "flex";
+}
+function openConfirm(titulo, mensaje){
+	debugger;
+	var myconfirm = document.getElementById("modal_alert_confirm");
+	document.getElementById("modal-alert-title").innerHTML = titulo;
+	document.getElementById("modal-alert-text").innerHTML = mensaje;
+	document.getElementById("btn-confirm-cancel").style.display = "inline-block";
+	myconfirm.style.display = "flex";
+  
+}
+function closeConfirm(){
+
+	var myconfirm = document.getElementById("modal_alert_confirm");
+	document.getElementById("modal-alert-title").innerHTML = '';
+	document.getElementById("modal-alert-text").innerHTML = '';
+
+	myconfirm.style.display = "none";
+  
+}
 
 
 function mostrarFormulario(formulario) {
@@ -116,9 +156,9 @@ function hacerLlamadaHTTP(url, callback) {
 }
 
 
-function submitForm(id_formulario, operation, titulo){
+async function submitForm(id_formulario, operation, titulo){
 	
-	if (confirm("¿Desea " + titulo+ "?")){
+	if (await MyApp.ui.confirm("¿Desea " + titulo+ "?")){
 		
 		mostrarModal(titulo);
 		
@@ -130,3 +170,59 @@ function submitForm(id_formulario, operation, titulo){
 	}
 }
 
+
+/*
+nuevo formulario modal
+*/
+/**
+ * Crea y muestra una ventana modal con iframe apilable.
+ * @param {string} url - Ruta del recurso HTML a mostrar.
+ * @param {string} titulo - Título de la ventana modal.
+ */
+function abrirModal(url, titulo = 'Ventana') {
+	let modalZIndex = 1000;
+	const overlay = document.createElement('div');
+	overlay.className = 'modal-overlay';
+	overlay.style.zIndex = modalZIndex++;
+
+	const modal = document.createElement('div');
+	modal.className = 'modal-content-new';
+
+	const header = document.createElement('div');
+	header.className = 'modal-header';
+	header.innerHTML = `<span>${titulo}</span>`;
+
+	const closeBtn = document.createElement('span');
+	closeBtn.className = 'modal-close';
+	closeBtn.innerHTML = '&times;';
+	closeBtn.onclick = () => cerrarModal(overlay);
+
+	header.appendChild(closeBtn);
+
+	const iframe = document.createElement('iframe');
+	iframe.className = 'modal-iframe';
+	iframe.src = url;
+
+	modal.appendChild(header);
+	modal.appendChild(iframe);
+	overlay.appendChild(modal);
+	document.body.appendChild(overlay);
+
+	// Mostrar con animación
+	setTimeout(() => overlay.classList.add('visible'), 10);
+
+	// Cerrar al hacer clic fuera (opcional)
+/*	overlay.onclick = (e) => {
+		if (e.target === overlay) cerrarModal(overlay);
+	};
+*/
+}
+
+/**
+ * Cierra y elimina un modal con efecto.
+ * @param {HTMLElement} overlay - Elemento overlay a cerrar.
+ */
+function cerrarModal(overlay) {
+  overlay.classList.remove('visible');
+  setTimeout(() => overlay.remove(), 200);
+}

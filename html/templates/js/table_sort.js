@@ -1,6 +1,6 @@
 function  addSortingTable(id_tabla){
 	
-	// Obtén la tabla y las filas de datos
+	// Obtï¿½n la tabla y las filas de datos
 	var tabla = document.getElementById(id_tabla);
 	var filas = tabla.querySelectorAll("tbody tr");
 
@@ -19,31 +19,33 @@ function  addSortingTable(id_tabla){
 }
 
 
-// Función para ordenar la tabla por la columna indicada
+// Funciï¿½n para ordenar la tabla por la columna indicada
 function ordenarTabla(cabecera, columna,tabla, filas) {
     var datos = Array.from(filas);
 	//console.log("hola");
     datos.sort(function(a, b) {
 		//console.log(a.cells[columna].textContent + '  = ' + a.cells[columna].textContent);
-		var valorA = parseFloat(a.cells[columna].textContent);
-		var valorB = parseFloat(b.cells[columna].textContent);
+		var valorA = parseFloat(a.cells[columna].textContent.replace('.', '').replace(',', '.'));
+		var valorB = parseFloat(b.cells[columna].textContent.replace('.', '').replace(',', '.'));
 		
         var textoA = a.cells[columna].textContent;
         var textoB = b.cells[columna].textContent;
 		
 		var resultado = 0;
 		
+		//console.log('Comparando: ' + textoA + ' con ' + textoB + ' => ' + valorA + ' con ' + valorB);
+
 		if (!isNaN(valorA) && !isNaN(valorB)) {
 			resultado = valorA - valorB;
 			//console.log('numeros');
 		} else if (!isNaN(valorA)) {
-			resultado = -1; // Valores numéricos primero
+			resultado = -1; // Valores numï¿½ricos primero
 			//console.log('numero vs texto');
 		} else if (!isNaN(valorB)) {
-			resultado = 1; // Valores numéricos primero
+			resultado = 1; // Valores numï¿½ricos primero
 			//console.log('texto vs numero');
 		} else {
-			resultado = textoA.localeCompare(textoB); // Ordenación alfabética
+			resultado = textoA.localeCompare(textoB); // Ordenaciï¿½n alfabï¿½tica
 			//console.log('textos');
 		}	
 		
@@ -65,10 +67,10 @@ function seleccionarTodasLasFilas(id_tabla, checkbox) {
 	
 	var tabla = document.getElementById(id_tabla);
 	
-	// Obtener todas las casillas de verificación de las filas
+	// Obtener todas las casillas de verificaciï¿½n de las filas
 	var checkboxes = tabla.querySelectorAll('input[type=checkbox]');
 
-	// Iterar sobre todas las casillas de verificación y establecer su estado a igual que el checkbox de encabezado
+	// Iterar sobre todas las casillas de verificaciï¿½n y establecer su estado a igual que el checkbox de encabezado
 	for (var i = 0; i < checkboxes.length; i++) {
 		checkboxes[i].checked = checkbox.checked;
 	}

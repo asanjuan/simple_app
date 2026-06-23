@@ -3,7 +3,7 @@
 /* Estilos generales */
 * {
 	box-sizing: border-box;
-
+	
 }
 
 .edit-btn {
@@ -19,12 +19,11 @@ body {
 	height: 100%;
 	margin: 0;
 	padding: 0;
-	/*font-family: Arial, sans-serif;*/
-	font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
 	font-size: 14px;
 	color: var(--color-texto);
 	scrollbar-width: thin;
 	scrollbar-color: #eee #ddd;
+	font-family:  'Inter',system-ui, sans-serif;
 }
 
 
@@ -175,13 +174,24 @@ body {
 	text-overflow: ellipsis;
 }
 
+.sidebar  select {
+	width:100%;
+	font-size: 12px;
+	
+}
+
+.sidebar.hidden  select {
+	display: none;
+	
+}
+
 
 .sidebar.hidden a {
 	display: none;
 	
 }
 
-.sidebar.hidden .mobile-menu span {
+.sidebar.hidden  span {
 	display: none;
 	
 }
@@ -265,11 +275,13 @@ body {
 
 .process_step {
   position: relative;
-  padding: 10px 20px 10px 30px;
+  padding: 10px ;
   background: #ddd;
   margin-right: 0px;
   color: #333;
   flex-grow:1;
+  border-radius:10px;
+  /*
   clip-path: polygon(
     0% 0%,
     calc(100% - 10px) 0%,
@@ -277,7 +289,7 @@ body {
     calc(100% - 10px) 100%,
     0% 100%,
     10px 50%
-  );
+  );*/
 }
 
 .process_button_list {
@@ -294,11 +306,11 @@ body {
   border-radius: 5px;
   cursor: pointer;
   position: relative;
-  padding: 5px 10px 5px 15px;
+  padding: 10px;
   background: #ddd;
   margin-right: 0px;
   color: #333;
-  font-weight: bolder;
+  
   
 }
 
@@ -340,7 +352,11 @@ div.datagrid {
 	/*border-radius:15px;*/
 
 }
-
+div.datagraphics {
+	display:block;
+	width:100%;
+	height:100%;
+}
 @keyframes tooltip {
 	0% {
 		opacity: 0;
@@ -355,8 +371,12 @@ div.datagrid {
 	}
 }
 
-div.datagrid-lookup {}
+/*
+div.datagrid-lookup {
 
+}
+
+*/
 
 .gridtoolbar {
 	display: flex;
@@ -417,7 +437,7 @@ div.datagrid-lookup {}
 }
 
 .formarea .formsection {
-	padding: 5px;
+	/*padding: 5px;*/
 	/*display:flex;*/
 	gap: 10px;
 	flex-wrap: wrap;
@@ -426,7 +446,104 @@ div.datagrid-lookup {}
 
 }
 
+/*
+ESTILOS PARA NUEVOS FORMULARIOS MODALES
+*/
+/* Fondo oscuro (overlay) */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity .2s ease;
+  }
 
+  .modal-overlay.visible {
+	
+    opacity: 1;
+  }
+
+  /* Contenedor del modal */
+  .modal-content-new {
+    position: relative;
+    background: #fff;
+    width: 80%;
+    height: 80%;
+    border-radius: 10px;
+    /*box-shadow: 0 4px 20px rgba(0,0,0,0.5);*/
+    /*overflow: auto;*/
+    transform: scale(0.95);
+    transition: transform .2s ease;
+  }
+
+  .modal-overlay.visible .modal-content-new {
+    transform: scale(1);
+  }
+
+  /* Encabezado */
+  .modal-header {
+    background: var(--color-cabecera);
+    color: var(--color-cabecera-texto);
+    padding: 10px 16px;
+    font-size: 16px;
+    display: flex;
+	border-radius: 10px 10px 0 0;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-close {
+    cursor: pointer;
+    font-size: 22px;
+    padding: 0 6px;
+  }
+
+  /* Iframe */
+  .modal-iframe {
+    width: 100%;
+    height: calc(100% - 40px);
+    border: none;
+  }
+
+.modal-alert-content {
+    background:white;
+    padding:20px;
+    border-radius:8px;
+    min-width:300px;
+	max-width:500px;
+	border:solid 1px #ccc;
+	
+}
+.modal-alert-title {
+	font-weight: bold;
+}
+.modal-alert-text {
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+.modal-buttons {
+	margin-top:20px;
+    text-align:right;
+}
+
+.modal-buttons button{
+    display: inline-block;
+    padding: 8px 16px;
+    font-size: 14px;
+    
+    border-radius: 6px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+	box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.btn-confirm-accept{
+	background-color: var(--color-cabecera);
+	color: var(--color-cabecera-texto);
+}
 
 /*.formsection */
 .control-list:not(.modal .control-list) {
@@ -609,6 +726,32 @@ h1 {
 
 }
 
+.tabs{
+    display:flex;
+    border-bottom:1px solid #ccc;
+}
+
+.tab{
+    padding:10px 20px;
+    cursor:pointer;
+    border:1px solid #ccc;
+    border-bottom:none;
+    background:#eee;
+}
+
+.tab.active{
+    background:white;
+    font-weight:bold;
+}
+.tab-content{
+    display:none;
+
+}
+
+.tab-content.active{
+    display:block;
+}
+
 /*
 @media (max-width: 1024px) {
 
@@ -654,7 +797,7 @@ h1 {
 	.gridtoolbar .boton-enlace {
 
 		min-width: 40px;
-		font-size: 18px;
+		font-size: 14px;
 	}
 
 	.gridtoolbar .boton-enlace span {
@@ -727,7 +870,7 @@ h1 {
 	}
 
 	.formarea .formsection {
-		padding: 10px;
+		/*padding: 10px;*/
 		display: block;
 		width: 100% !important;
 	}
@@ -809,7 +952,7 @@ h1 {
 .boton-enlace {
 
 	display: inline-block;
-	text-align: center;
+	
 	padding: 5px;
 	border: none;
 	/*
@@ -821,7 +964,7 @@ h1 {
 
 	text-decoration: none;
 	border-radius: 5px;
-
+	font-size:12px;
 	cursor: pointer;
 }
 
@@ -864,6 +1007,7 @@ select {
 /* Estilos para el modal */
 .modal {
 	display: none;
+	inset: 1;
 	position: fixed;
 	z-index: 1000;
 	top: 0;
@@ -871,6 +1015,8 @@ select {
 	width: 100%;
 	height: 100%;
 	background-color: rgba(0, 0, 0, 0.7);
+	justify-content: center;
+	align-items: center;
 }
 
 .login-main {

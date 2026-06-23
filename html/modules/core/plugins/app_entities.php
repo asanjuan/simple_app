@@ -8,11 +8,12 @@ class app_entities_plugin extends PluginInterface {
 	
 	public function postUpdate($item, $datos){}
 	public function postInsert($item, $datos){ }
-	public function preDuplicate($item, &$datos){ }
+	public function preDuplicate($item, &$datos){
+	    
+	    $datos['entity']= $datos['entity'].'_copy';
+	}
 	public function postDuplicate($item, $new_item){ 
 	    
-	    //cambiamos el nombre
-	    query("update app_entities set entity = concat(entity,'_copy'), plural_name = concat(plural_name,' COPY') where id=".quote($new_item));
 	    
 	    //duplicamos Columnas
 		$data = query("SELECT * FROM app_entity_columns where id_entity=".quote($item));
@@ -38,6 +39,7 @@ class app_entities_plugin extends PluginInterface {
 		    $v['id_entity'] = $new_item;
 		    $v['id']='';
 		    $v['estado']=0;
+		    $v['filename'] = 'copy_'.$v['filename'];
 		    dbinsert('app_scripts', $v);
 		}
 		
@@ -48,6 +50,7 @@ class app_entities_plugin extends PluginInterface {
 		    $v['id_entity'] = $new_item;
 		    $v['id']='';
 		    $v['estado']=0;
+		    $v['filename'] = 'copy_'.$v['filename'];
 		    dbinsert('app_plugins', $v);
 		}
 		
@@ -82,9 +85,6 @@ class app_entities_plugin extends PluginInterface {
             		    $uc['id_seccion'] = $new_section;
             		    $uc['id']='';
             		    dbinsert('app_user_controls', $uc);
-            		    
-            		    
-            		    
             		}
         		    
         		}
@@ -188,6 +188,7 @@ class app_entities_plugin extends PluginInterface {
 						inner join app_entities e on e.entity = C.table_name 
 						where table_schema = '$dbname'
 						and C.table_name ='$tabla'";
+				
 				query($sql);
 				
 				$this->showMessage("Columnas importadas");

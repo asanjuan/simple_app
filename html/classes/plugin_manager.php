@@ -15,6 +15,7 @@ class PluginManager {
 	
 }
 
+
 // clase controller que contenga toda la lógica común de un controlador de entidad
 // representa un mantenimiento para ALTA - BAJA - MODIFICACIÓN Y LISTADO DE MANTENIMIENTO de una entidad de base de datos genérica
 class PluginInterface {

@@ -180,7 +180,7 @@ class EntityManager {
 		for ($i = 0; $i < count($data); $i++) {
 			
 			if (!empty($data[$i]["dominio"])){
-			$data[$i]["options"]  = query("select codigo as value, descripcion as description 
+				$data[$i]["options"]  = query("select codigo as value, descripcion as description 
 							from app_optionsets op
 							inner join app_dominios d on op.id_dominio = d.id
 							where d.nombre = '".$data[$i]["dominio"]."' 
@@ -192,6 +192,17 @@ class EntityManager {
 		
 	}
 	
+	public static function GetCompanyColumn($estructura){
+		$company_column = null;
+		foreach ($estructura as $campo){
+			if ($campo['type']=='guid' && $campo['lookup_table']=='app_empresas'){
+				$company_column = $campo;
+				break;
+			}
+		}
+		return $company_column;
+	}
+
 	public static function GetVistasLookup($entity_id){
 		$data = query("Select id, name from app_views where tipo = 'lookup' and id_entity =".quote($entity_id));
 		
@@ -201,7 +212,7 @@ class EntityManager {
 
 
 	public static function GetVistas($entity_id){
-		$data = query("Select id, name from app_views where tipo <> 'lookup' and id_entity =".quote($entity_id));
+		$data = query("Select id, name, inicial from app_views where tipo <> 'lookup' and id_entity =".quote($entity_id));
 		
 		if (count($data)==0){
 			//NO HAY VISTAS, CREAREMOS UNA SOBRE LA MARCHA CON UN SELECT * (HAREMOS ESTO TOLERANTE A ERRORES)
@@ -215,6 +226,7 @@ class EntityManager {
 			$r['order_by'] = $entidad['campo_principal'];
 			$r['id_entity'] = $entity_id;
 			$r['tipo'] = "public";
+			$r['inicial'] = 1;
 			$r['search_fields'] = $entidad['campo_principal'];
 			
 			dbinsert("app_views",$r);
@@ -260,6 +272,25 @@ class EntityManager {
 		
 		
 	}
+
+	public static function GetLibraryFile($filename){
+		
+		$sql = "SELECT m.folder, p.filename, p.code FROM app_plugin_library p
+				inner join app_modules m on p.id_module = m.id
+				where p.estado = 1 and p.filename = ".quote($filename);
+		$data = query($sql);
+		//return $data;
+		
+		$includes = array();
+		foreach ($data as $plugin){
+			
+			$includes[] = "modules/".$plugin["folder"]."/code/".$plugin["filename"];
+		}
+		
+		return $includes;
+		
+		
+	}
 	
 	public static function GetScriptFiles($entidad){
 		$sql = "SELECT m.folder, p.filename, p.type
@@ -285,11 +316,12 @@ class EntityManager {
 		
 	}
 
+	
 	public static function getDBtype($type, $max){
 		$val = $type;
 		switch ($type){
 			case "text": $val = "varchar($max)"; break;
-			case "textarea": $val = "text"; break;
+			case "textarea": $val = "MEDIUMTEXT"; break;
 			case "password": $val = "varchar($max)"; break;
 			case "guid": $val = "char(32)"; break;
 			case "file": $val = "varchar(255)"; break;

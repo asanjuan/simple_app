@@ -69,7 +69,7 @@ function check_URL_BASE(){
 	$current = get_URL_index();
 
 	if ($selected != $current){
-		ConfigSingleton::set_param('HOME_BASE_URL',$current);
+	//	ConfigSingleton::set_param('HOME_BASE_URL',$current);
 	}
 }
 
@@ -83,37 +83,49 @@ function get_URL_index() {
 
 
 
-
+function get_Focus_mode(){
+	if (isset($_GET['focusmode']) && $_GET['focusmode']=="true") {
+		return true;
+	} else {
+		return false;
+	}
+}
 function build_URL_Controller_search($controller)
 {
 	$url = get_URL_BASE();
+	
 	$url .= "?controller=" . $controller;
+	$url .= ( get_Focus_mode() ? "&focusmode=true" : "");
 	return $url;
 }
 function build_URL_Controller_item($controller, $item)
 {
 	$url = get_URL_BASE();
 	$url .= "?controller=" . $controller . "&item=" . $item;
+	$url .= ( get_Focus_mode() ? "&focusmode=true" : "");
 	return $url;
 }
 function build_URL_Controller_del($controller, $item)
 {
 	$url = get_URL_BASE();
 	$url .= "?controller=" . $controller . "&item=" . $item . "&del";
+	$url .= ( get_Focus_mode() ? "&focusmode=true" : "");
 	return $url;
 }
 function build_URL_Controller_new($controller)
 {
 	$url = get_URL_BASE();
 	$url .= "?controller=" . $controller . "&new";
+	$url .= ( get_Focus_mode() ? "&focusmode=true" : "");
 	return $url;
 }
 
 //genera una tabla html a partir del resultado de una consulta a BD.
 function generarTablaHTML($result, $controller = "", $campo_id = "", $access_delete = false, $selectable = true, $image_fields = "")
 {
+	//dump($result);
 	if (empty($result)) {
-		return '<div style="padding:10px;">No hay datos para mostrar.</div>';
+		return '<div class="table-container"><div style="padding:10px;">No hay datos para mostrar.</div></div>';
 	}
 
 	$images = explode(',',$image_fields);
@@ -158,11 +170,12 @@ function generarTablaHTML($result, $controller = "", $campo_id = "", $access_del
 				
 				} else {
 					$html .= '<td>' . format_value($valor) . '</td>';
+					//$html .= '<td>' . ($valor) . '</td>';
 				}
 			}
 		}
-		if ($access_delete && $campo_id != "" && $controller != "" && isset($fila[$campo_id]))
-			$html .= '<td><a  onclick="confirmarYRedirigir(\'Confirma borrar el registro?\',\'' . build_URL_Controller_del($controller, $fila[$campo_id]) . '\')" href="#" class="boton-enlace"><img src="templates/img/papelera-xmark.svg" class="list-icon" /></a></td>';
+		//if ($access_delete && $campo_id != "" && $controller != "" && isset($fila[$campo_id]))
+		//	$html .= '<td><a  onclick="confirmarYRedirigir(\'Confirma borrar el registro?\',\'' . build_URL_Controller_del($controller, $fila[$campo_id]) . '\')" href="#" class="boton-enlace"><img src="templates/img/papelera-xmark.svg" class="list-icon" /></a></td>';
 
 		$html .= '</tr>';
 	}
@@ -177,7 +190,7 @@ function generarTablaHTML($result, $controller = "", $campo_id = "", $access_del
 function generarTablaHTML_mail($result, $controller = "", $campo_id = "", $access_delete = false, $selectable = true)
 {
 	if (empty($result)) {
-		return 'No hay datos para mostrar.';
+		return '<div class="table-container">No hay datos para mostrar.</div>';
 	}
 	
 	$random_id = newRandomID();
@@ -238,7 +251,8 @@ function format_value($valor)
 	
 	if (is_numeric($valor) && is_float($valor+0) ) {
 		
-		$valor = number_format($valor, 2);
+		$valor = number_format($valor, 2,',','.');
+
 	} elseif (is_numeric($valor)) {
 		
 		$valor = number_format($valor, 0);
@@ -317,6 +331,7 @@ function generate_form_fields($estructura, $datos, $mostrar_calculados = true)
 							$html .= '<input ' . $disabled . ' ' . $required . '   type="datetime-local"  id="' . $campo["dbcolumn"] . '" name="' . $campo["dbcolumn"] . '" value="' . $val . '"/>';
 							break;
 						case "password":
+						case "secret":
 							$html .= '<input ' . $disabled . ' ' . $required . '  type="password" maxlength="' . $campo["max"] . '" id="' . $campo["dbcolumn"] . '" name="' . $campo["dbcolumn"] . '" />';
 							break;
 						case "color":
@@ -339,7 +354,11 @@ function generate_form_fields($estructura, $datos, $mostrar_calculados = true)
 						case "option":
 							$html .= '<select id="' . $campo["dbcolumn"] . '" name="' . $campo["dbcolumn"] . '" ' . $disabled . ' ' . $required . ' >';
 							$html .= '<option value=""> - - - </option>';
-							foreach ($campo["options"] as $opt) {
+							$opt_list = $campo["options"];
+							if (isset($campo["formula"]) && !isset($campo["dominio"])){
+								$opt_list = calcular_formula_options($campo["formula"], $datos);
+							}
+							foreach ($opt_list as $opt) {
 								$selected = "";
 								if ($opt["value"] == $val) $selected = "selected";
 								$html .= '<option value="' . $opt["value"] . '" ' . $selected . '>' . $opt["description"] . '</option>';
@@ -572,14 +591,13 @@ function print_lookup_field($campo, $tabla, $campo_codigo, $campo_descripcion, $
 
 
 
-function print_grid($view_id, $data_field, $data_value, $grid_id, $grid_enabled=1)
+function print_grid($view_id, $data_field, $data_value, $grid_id, $grid_enabled=1,$page_size=12)
 {
 	ob_start();
 	if ($grid_id == ""){
 		$grid_id = newRandomID(5);
 	}
 		
-	$page_size = 15;
 	include 'templates/grid.php';
 
 	return ob_get_clean();
@@ -663,19 +681,52 @@ function calcular_campo_calculado($expresion, $datos)
 			$expresion = str_replace("{" . $campo . "}", quote($valor), $expresion);
 		}
 		//trace($expresion);
-
+		if (str_contains($expresion, "{")) return 0; //no se han reemplazado todos los campos 
+		
 		try {
 
 			$data = query1($expresion);
 		} catch (PDOException $e) {
-			trace("Error en la conexi�n: " . $e->getMessage());
+			//trace("Error en la conexi�n: " . $e->getMessage());
 		}
 
-		
 		return reset($data); //devuelve el primer elemento de ese array
 	}else {
 		return 0;
 	}
+
+	
+}
+
+
+function calcular_formula_options($expresion, $datos)
+{
+	$options = array();
+	if ($expresion == "") return $options;
+
+	// obtendremos una sql con variables del con el formato {campo} apuntando a alguno de los datos del formulario
+	if ($datos ){
+		foreach ($datos as $campo => $valor) {
+
+			$expresion = str_replace("{" . $campo . "}", quote($valor), $expresion);
+		}
+		//trace($expresion);
+		if (str_contains($expresion, "{")) return $options; //no se han reemplazado todos los campos 
+							
+		try {
+
+			$data = query($expresion);
+			$options = array();
+			foreach($data as $record){
+				$v = array_values($record);
+				$options[] = array("value"=>$v[0], "description"=>$v[1]);
+			}
+		} catch (PDOException $e) {
+			trace("Error en la conexi�n: " . $e->getMessage());
+		}
+
+	}
+	return $options;
 
 	
 }
@@ -849,4 +900,76 @@ function obtenerDominioDeURL($url)
 function comienzaCon($texto, $inicio)
 {
 	return strpos($texto, $inicio) === 0;
+}
+
+function cypherMessageAES(string $message, string $key): string
+{
+    $cipher = 'AES-256-CBC';
+
+    // Derivar clave de 256 bits
+    $key = hash('sha256', $key, true);
+
+    // IV aleatorio
+    $ivLength = openssl_cipher_iv_length($cipher);
+    $iv = random_bytes($ivLength);
+
+    // Cifrar
+    $encrypted = openssl_encrypt(
+        $message,
+        $cipher,
+        $key,
+        OPENSSL_RAW_DATA,
+        $iv
+    );
+
+    // Concatenar IV + texto cifrado y codificar
+    return base64_encode($iv . $encrypted);
+}
+
+function decypherMessageAES(string $encrypted, string $key): string
+{
+    $cipher = 'AES-256-CBC';
+
+    $key = hash('sha256', $key, true);
+    $data = base64_decode($encrypted);
+
+    $ivLength = openssl_cipher_iv_length($cipher);
+    $iv = substr($data, 0, $ivLength);
+    $cipherText = substr($data, $ivLength);
+
+    return openssl_decrypt(
+        $cipherText,
+        $cipher,
+        $key,
+        OPENSSL_RAW_DATA,
+        $iv
+    );
+}
+
+
+
+class Mapping {
+    private $fields = [];
+    
+    public function addMapping($origen, $destino = ''){
+        if ($destino == ''){
+          $destino = $origen;   
+        }
+        $this->fields[$origen] = $destino;
+    }
+    
+    
+    public function cloneRecord($record){
+        $nuevoRegistro = [];
+
+        foreach ($this->fields as $origen => $destino) {
+            if (array_key_exists($origen, $record)) {
+                $nuevoRegistro[$destino] = $record[$origen];
+            }
+        }
+
+        return $nuevoRegistro;
+ 
+    }
+    
 }

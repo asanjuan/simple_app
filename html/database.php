@@ -240,21 +240,53 @@ function dbdelete($tabla, $datos){
 }
 
 
-function nextSequence($nombre){
+function nextSequence($nombre, $year = 0){
 	$sql = "select * from app_numeraciones where nombre ='$nombre'";
 	$data = query1($sql);
 	$value = 1;
 	$prefix = "";
-	$longitud = 5;
-	 
+	$longitud = 5; //longitud por defecto
+	$es_anual = false;
+
 	if (!empty($data)){
 		//usamos una numeración existente
-		$value = $data['siguiente'];
 		$prefix = $data['prefijo'];
-		$data['siguiente'] = $value +1;
-		dbupdate("app_numeraciones", $data);
+
+		//hay que determinar si es una numeración anual
+		if ($data['anual']==1){
+			$es_anual = true;
+
+			//depende del año, cada año se reinicia
+			$curr_year = date("Y");
+			if ($year ==0 ) $year = $curr_year;
+			$seq = query1("select * from app_secuencias_numeraciones where id_numeracion = ".quote($data['id'])." and anio = $year");
+			if (!empty($seq)){
+				$value = $seq['siguiente']; //recuperamos el secuencial
+				$seq['siguiente'] = $value +1;
+				dbupdate("app_secuencias_numeraciones", $seq); //actualizamos BBDD
+			}else{
+				$data = [ 
+				"id_numeracion" => $data['id'],
+				"anio" => $year,
+				"siguiente" => ($value +1),
+				];
+				dbinsert("app_secuencias_numeraciones", $data); //creamos el nuevo registro de año
+			}
+
+
+		}else{
+			//hay una numeración, pero no es de tipo anual
+			$value = $data['siguiente'];
+			$data['siguiente'] = $value +1;
+
+			dbupdate("app_numeraciones", $data);
+
+		}
+
+		
 
 	}else {
+		//si no existe nada, creamos una numeración por defecto
 		$data = [ 
 			"nombre" => $nombre,
 			"prefijo" => "",
@@ -266,6 +298,9 @@ function nextSequence($nombre){
 	}
 
 	$formated_value = str_pad($value,$longitud,'0',STR_PAD_LEFT );
+	if ($es_anual){
+		$formated_value = $year . "-".$formated_value;
+	}
 	if ($prefix != ""){
 		$formated_value = $prefix . "-".$formated_value;
 	}
@@ -333,7 +368,8 @@ function sqlToJson($query) {
         ];
     }
     
-    if (preg_match_all('/(INNER|LEFT|RIGHT) JOIN ([^ ]+)(?: AS ([^ ]+))? ON ([^ ]+\s*=\s*[^ ]+)/i', $query, $matches, PREG_SET_ORDER)) {
+    //if (preg_match_all('/(INNER|LEFT|RIGHT) JOIN ([^ ]+)(?: AS ([^ ]+))? ON ([^ ]+\s*=\s*[^ ]+)/i', $query, $matches, PREG_SET_ORDER)) {
+	if (preg_match_all('/(INNER|LEFT|RIGHT)\s+JOIN\s+([^\s]+)(?:\s+AS\s+([^\s]+))?\s+ON\s+(.+?)(?=\s+(?:INNER|LEFT|RIGHT)\s+JOIN|\s+WHERE|\s+GROUP\s+BY|\s+ORDER\s+BY|\s*$)/i', $query, $matches, PREG_SET_ORDER)) {
         foreach ($matches as $match) {
             $parsedQuery["joins"][] = [
                 "type" => strtoupper($match[1]),

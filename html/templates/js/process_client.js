@@ -53,6 +53,7 @@ function cargarProceso(proc) {
             processlist.classList.add("flex-rows");
             
             proc.appendChild(processlist);
+			var currentDiv = null;
 
             data.fases.forEach(function(fase){
                 if (fase.tipo_fase != 1 || fase.activo || fase.completado){
@@ -60,34 +61,40 @@ function cargarProceso(proc) {
 					faseDiv.classList.add("process_step");
 					if (fase.tipo_fase == 1){
 						faseDiv.classList.add("completed");
+						currentDiv = faseDiv;
 					}else  if (fase.activo) {
 						faseDiv.classList.add("active");
+						currentDiv = faseDiv;
 					}else if (fase.completado) {
 						faseDiv.classList.add("completed");
 					}
-					faseDiv.innerHTML = "<strong>"  + fase.nombre + "</strong> ";
-					processlist.appendChild(faseDiv);
+					faseDiv.innerHTML = "<span><strong>"  + fase.nombre + "</strong></span> ";
+					//processlist.appendChild(faseDiv);
 				}
 				
             });
 
-
-			var buttons  = document.createElement("div");
-            buttons.classList.add("process_button_list");
-            //buttons.classList.add("flex-rows");
-            data.transiciones.forEach(function(trans){
-                var btn = document.createElement("button");
+			if (currentDiv){
 				
-                btn.classList.add("process_button");
-				btn.addEventListener("click", function (event) {
-					event.preventDefault(); // Evitar que el enlace cambie la página
+				processlist.appendChild(currentDiv);
+				var buttons  = document.createElement("span");
+				buttons.classList.add("process_button_list");
+				//buttons.classList.add("flex-rows");
+				data.transiciones.forEach(function(trans){
+					var btn = document.createElement("button");
 					
-					transicion(proc, trans.id);
+					btn.classList.add("process_button");
+					btn.addEventListener("click", function (event) {
+						event.preventDefault(); // Evitar que el enlace cambie la página
+						
+						transicion(proc, trans.id);
+					});
+					btn.innerHTML = trans.nombre;
+					buttons.appendChild(btn);
 				});
-                btn.innerHTML = trans.nombre;
-                buttons.appendChild(btn);
-            });
-            proc.appendChild(buttons);
+				currentDiv.appendChild(buttons);
+				
+			}
 
 
 		})
@@ -124,7 +131,7 @@ function transicion(proc, id_transicion) {
 		.then(data => {
             //debugger;
 			console.log(data);
-
+			debugger;
 			// Recargar el proceso para reflejar los cambios
 			reloadPage();
 

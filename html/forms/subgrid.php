@@ -278,6 +278,7 @@ class Form_Subgrid extends RestApi {
 		$obj = EntityManager::GetVista($view_id);
 		
 		$metadata = EntityManager::GetEntityById($obj['id_entity']);
+		$estructura = EntityManager::GetEstructura($metadata['entity']);
 		$this->view_list = EntityManager::GetVistas($obj['id_entity']);
 		$this->has_quick_create_form = FormManager::HasQuickForm($obj['id_entity']);
 		$this->buttons = EntityManager::GetFormButtons($metadata['entity']);
@@ -298,6 +299,26 @@ class Form_Subgrid extends RestApi {
 		$sql = $obj['query'];
 		$search_fields = $obj['search_fields'];
 		
+		$opt_list = SecurityManager::getUserCompanies($_SESSION['userid']);
+		$list = [];
+		foreach ($opt_list as $opt) {
+			$list [] = quote($opt["id"]);
+		}
+		$filtro_empresas = implode(",",$list);
+		
+		//determinar la seguridad por empresa
+		$company_field = EntityManager::GetCompanyColumn($estructura);
+		if ($company_field ){
+			
+			if (isset($_SESSION['company'])){
+				$sql =  appendcondition($sql, $company_field['dbcolumn'] . " = ".quote($_SESSION['company']));
+			}else {
+				$sql =  appendcondition($sql, $company_field['dbcolumn'] . " in ($filtro_empresas) ");
+			}
+		}
+
+
+		//añadimos el filtro de búsqueda del usuario
 		if ($search_fields != "" && $search_text != ""){
 			$filters = explode(",", $search_fields);
 			$search_condition = "";
@@ -309,6 +330,7 @@ class Form_Subgrid extends RestApi {
 			$sql =  appendcondition($sql, $search_condition);
 
 		}
+		
 		
 		$this->this_controller = $metadata['entity'];
 		$this->key_field = "id";
@@ -404,17 +426,28 @@ class Form_Subgrid extends RestApi {
 		
 		$grid_toolbar = '<div class="gridtoolbar">'.$vistas_html.$botones .$busqueda.$custom_buttons.'</div>';
 		
+
 		$paginacion = "";
 		if ($total_pages > 1){
+			$paginacion = "<div>";
 			if ( $page > 1) {
 				$paginacion .= '<a class="boton-enlace grid-pagina" href="#" data-page="'.($page-1).'"> << Anterior </a> ';
+			}else{
+				$paginacion .= '<span class="boton-enlace grid-pagina" > << Anterior </span> ';
 			}
 			if ( $page < $total_pages) {
 				$paginacion .= '<a class="boton-enlace grid-pagina" href="#" data-page="'.($page+1).'"> Siguiente >> </a> ';
+			}else{
+				$paginacion .= '<span class="boton-enlace grid-pagina" data-page="'.($page+1).'"> Siguiente >> </span> ';
 			}
+			$paginacion .= "<strong>  $page / $total_pages ($total_registros registros)</strong>";
+
+			$paginacion .= "</div>";
 		}
-		$total = "<strong>  $page / $total_pages ($total_registros registros)</strong>";
-		return  $bloque_mensajes.$grid_toolbar . $listado_html . $paginacion .$total;
+		
+		
+		
+		return  $bloque_mensajes . $grid_toolbar . $listado_html . $paginacion;
 		
 	}
 	
@@ -445,9 +478,9 @@ class Form_Subgrid extends RestApi {
 			<div id="modal-form-insert">'.$form.'</div>
 			
 			</form>
-			<div > 
-			<button id="acceptButton" >Aceptar</button>
-			<button id="closeButton"  onclick="javascript:ocultarFormulario();">Cerrar</button> 			 
+			<div class="modal-buttons" > 
+			<button class="btn-confirm-accept" id="acceptButton" >Aceptar</button>
+			<button class="btn-confirm-cancel" id="closeButton"  onclick="javascript:ocultarFormulario();">Cerrar</button> 			 
 			</div>';
 		
 		echo $html;
@@ -475,15 +508,18 @@ class Form_Subgrid extends RestApi {
 		$estructura = EntityManager::GetEstructura($controller);
 		foreach($estructura  as $campo){
 			if ( $campo["dbcolumn"] != $key_field  && isset($data[$campo["dbcolumn"]])){
-				$record[$campo["dbcolumn"]] = mask($data[$campo["dbcolumn"]], $campo["type"]);
+				if ($campo["type"] == "secret"){
+					$record[$campo["dbcolumn"]] = cypherMessageAES($data[$campo["dbcolumn"]],__CYPHERKEY__);
+				}else{
+					 $record[$campo["dbcolumn"]] = mask($data[$campo["dbcolumn"]], $campo["type"]);
+				}
+			
 			}
 		}
-		//var_dump($estructura);
 				
 		
 		if (count($_FILES)>0){
-			
-			
+
 			foreach($estructura  as $campo){
 				if ( $campo["type"] == 'file' ){
 					trace('este es el campo de tipo fichero '. $campo["dbcolumn"]);

@@ -61,7 +61,7 @@ class app_entities_plugin extends PluginInterface {
 				
 				//publicamos el fichero
 				$f = file_put_contents($filename, $datos['code']);
-				dump($f);
+				//dump($f);
 				$this->showMessage("Plugin $fichero publicado.");
 				
 			} catch (PDOException $e) {

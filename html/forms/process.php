@@ -108,6 +108,7 @@ class ProcessDispatcher extends RestApi {
             //obtenemos la estructura de la entidad
             $estructura = EntityManager::GetEstructura($entity_name);
             $status_field = get_status_field($estructura);
+            
 
             //obtenemos el valor de la fase
             $fase_data = dbgetbyid("app_fases_proceso", $trans['id_fase_fin']);
@@ -121,6 +122,8 @@ class ProcessDispatcher extends RestApi {
             if ($proc['campo_entidad'] != ""){
                 $registro[$proc['campo_entidad']] = $fase_data['valor'];
             }
+            dump($registro);
+            
             dbupdate( $proc['entity'], $registro);
             
             $this->loadPlugins($entity_name);

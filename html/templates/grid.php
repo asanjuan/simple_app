@@ -1,5 +1,5 @@
 <div id="<?=$grid_id?>" class="datagrid"  
-  data-gridurl="<?php echo get_URL_BASE(); ?>/forms/subgrid.php" 
+  data-gridurl="<?php echo get_URL_BASE(); ?>forms/subgrid.php<?php echo ( get_Focus_mode() ? "?focusmode=true" : "") ?>"
   data-view-id="<?=$view_id?>"
   data-field="<?=$data_field?>" 
   data-value="<?=$data_value?>" 

@@ -4,10 +4,10 @@
 	<h1><?= $metadata["plural_name"] ?></h1>
 	</div>
 	<div class="flex-expand scrollable">
-		<div class="panel_item_list">
-			<div class="panel_item2" style="width: 100%">
-				<div id="maingrid" class="datagrid"  
-				data-gridurl="<?php echo get_URL_BASE(); ?>/forms/subgrid.php" 
+		<div class="flex-columns">
+			<div class="flex-expand" style="width: 100%">
+				<div id="maingrid" class="datagrid flex-columns"  
+				data-gridurl="forms/subgrid.php<?php echo ( get_Focus_mode() ? "?focusmode=true" : "") ?>"
 				data-view-id="<?=$primera_vista?>"
 				data-field="" data-value="" 
 				data-enabled="<?=$grid_enabled?>"

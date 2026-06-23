@@ -10,8 +10,14 @@ $entidad = $_GET['controller'];
 $metadata = EntityManager::GetEntity($entidad);
 $vistas = EntityManager::GetVistas($metadata['id']);
 $primera_vista = $vistas[0]["id"];
+foreach ($vistas as $vista){
+	if ($vista['inicial']==1){
+		$primera_vista = $vista['id'];
+	}
+}
 $metadata = EntityManager::GetEntity($entidad);
 $grid_enabled = 1;
+
 
 
 $is_admin = SecurityManager::UserIsAdmin($_SESSION['userid']);

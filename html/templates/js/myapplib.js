@@ -190,6 +190,43 @@ var MyApp = (function () {
                     }));
                 });
 
+            },
+            decypher : function (msg) {
+                return new Promise((resolve, reject) => {
+                    const myHeaders = new Headers();
+                    myHeaders.append("Content-Type", "application/json");
+
+
+                    const raw = JSON.stringify({
+                    "method": "decypher",
+                    "message": msg
+                    });
+
+                    const requestOptions = {
+                    method: "POST",
+                    headers: myHeaders,
+                    body: raw,
+                    };
+
+                    fetch("/api/cypher.php", requestOptions)
+                    .then(response => {
+                        if (!response.ok) {
+                            // Rechaza si hay error HTTP (404, 500, etc.)
+                            return response.json().then(err => reject({
+                                status: response.status,
+                                message: response.statusText,
+                                body: err
+                            }));
+                        }
+                        return response.json(); // Si todo va bien
+                    })
+                    .then(data => resolve(data))
+                    .catch(error => reject({
+                        status: null,
+                        message: "Network or parsing error",
+                        body: error
+                    }));
+                });
             }
         },
 
@@ -201,8 +238,47 @@ var MyApp = (function () {
                 notification.innerText = message;
 				var main_section = document.getElementById('main');
 				main_section.insertBefore(notification, main_section.firstChild);
-                //document.body.appendChild(notification);
-                //setTimeout(() => notification.remove(), 10000);
+
+            },
+            confirm: function (message, title = "") {
+                return new Promise(resolve => {
+
+                    openConfirm(title, message);
+                    
+                    btncancel = document.getElementById("btn-confirm-cancel");
+                    btnOk = document.getElementById("btn-confirm-accept");
+                    
+                    btnOk.onclick = () => {
+                        closeConfirm();
+                        resolve(true);
+                    }
+
+                    btncancel.onclick = () => {
+                        closeConfirm();
+                        resolve(false);
+                    }
+
+                });
+            },
+            alert: function (message, title = "") {
+                return new Promise(resolve => {
+
+                    openAlert(title, message);
+                    
+                    btncancel = document.getElementById("btn-confirm-cancel");
+                    btnOk = document.getElementById("btn-confirm-accept");
+                    
+                    btnOk.onclick = () => {
+                        closeConfirm();
+                        resolve(true);
+                    }
+
+                    btncancel.onclick = () => {
+                        closeConfirm();
+                        resolve(false);
+                    }
+
+                });
             }
         },
 
@@ -220,3 +296,5 @@ var MyApp = (function () {
         }
     };
 })();
+
+
