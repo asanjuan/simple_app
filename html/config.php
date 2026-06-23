@@ -42,5 +42,6 @@ function dump($var){
 	echo "</pre>";
 }
 
-// Define your cypher key here
-define( '__CYPHERKEY__', 'VblOSfDHjAHYaxhiWVyAgTbKACEkzKyvZrnmHGqPhknjROlIjd'); 
+
+$cypherKey = $_ENV['CYPHERKEY'] ?? '';
+define('__CYPHERKEY__', $cypherKey);
