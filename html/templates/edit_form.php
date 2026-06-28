@@ -50,7 +50,10 @@
 					echo "<span> " . $button["label"] ." </span>" ;
 					echo '</button>';
 				}else if ($button["type"]=="script_form"){ 
-					echo '<button type="button" class="boton-enlace" name="' . $button["action"] . '" > '. $button["label"] .'</button>';
+					echo '<button type="button" class="boton-enlace" name="' . $button["action"] . '" > ';
+					if ($button["icon"]!="") echo '<i class="fa-solid '.$button["icon"].'"></i>';
+					echo "<span> " . $button["label"] ." </span>" ;
+					echo '</button>';
 				}
 			}
 			
@@ -72,7 +75,11 @@
 	
 
 	<div class="flex-rows flex-vertical-center">
-		<div><h1><?= $this->singular_name ?></h1></div>
+		<div>
+			<h1> <i class="fas <?php if ($this->icon!="") echo $this->icon; else echo "fa-table-cells-large"; ?>"></i>
+				<?= $this->singular_name ?>
+			</h1>
+		</div>
 		<?php if (!$this->access_update) { 
 		echo "<div>(Solo lectura)</div>";
 		}

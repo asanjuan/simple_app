@@ -24,7 +24,8 @@ $mainForm->Setup(
 	"id",
 	'',
 	$estructura,
-	$metadata['tipo_entidad']
+	$metadata['tipo_entidad'],
+	$metadata['icon']
 	);
 			
 PluginManager::RegisterForm($mainForm);
@@ -37,11 +38,7 @@ foreach ($plugin_files as $fichero){
 	//if ($fichero['tipo']==0){
 		include_once $fichero['fichero'];
 	//}
-	/*
-	else{
-		eval ($fichero['code']); //lo eliminamos por peligroso.
-	}
-	*/	
+
 }
 
 

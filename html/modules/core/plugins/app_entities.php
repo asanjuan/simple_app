@@ -168,7 +168,7 @@ class app_entities_plugin extends PluginInterface {
 				
 				$tabla = $datos['entity'];
 								
-				$sql = "insert into app_entity_columns (id, id_entity, dbcolumn, label, type, `max`, hidden, disabled)
+				$sql = "insert into app_entity_columns (id, id_entity, dbcolumn, label, type, `max`, hidden, disabled, orden)
 						select HEX(RANDOM_BYTES(16)) as id,  e.id as id_entity, COLUMN_NAME , COLUMN_NAME ,
 						case data_type 
 						when 'int' then 'int'   
@@ -182,7 +182,8 @@ class app_entities_plugin extends PluginInterface {
 						else data_type
 						end AS tpye, coalesce(CHARACTER_MAXIMUM_LENGTH,0) AS `max`,
 						(case when extra ='auto_increment' then 1 else 0 end) as hidden, 
-						(case data_type when 'timestamp' then 1 else 0 end )as disabled
+						(case data_type when 'timestamp' then 1 else 0 end )as disabled,
+						(case  COLUMN_NAME when 'id' then 0 when 'fecha_modificacion' then 99 when 'fecha_creacion' then 99 else 1 end) as orden
 
 						from information_schema.columns AS C 
 						inner join app_entities e on e.entity = C.table_name 

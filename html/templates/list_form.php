@@ -1,7 +1,9 @@
 
 <div class="flex-columns">
 	<div>
-	<h1><?= $metadata["plural_name"] ?></h1>
+	<h1>
+		<i class="fas <?php if ($metadata['icon']!="") echo $metadata['icon']; else echo "fa-table-cells-large"; ?>"></i>
+		<?= $metadata["plural_name"] ?></h1>
 	</div>
 	<div class="flex-expand scrollable">
 		<div class="flex-columns">

@@ -178,8 +178,10 @@ nuevo formulario modal
  * Crea y muestra una ventana modal con iframe apilable.
  * @param {string} url - Ruta del recurso HTML a mostrar.
  * @param {string} titulo - Título de la ventana modal.
+ * @param {number} pct_alto - Porcentaje de alto del modal.
+ * @param {number} pct_ancho - Porcentaje de ancho del modal.
  */
-function abrirModal(url, titulo = 'Ventana') {
+function abrirModal(url, titulo = 'Ventana', pct_alto = 80, pct_ancho = 80) {
 	let modalZIndex = 1000;
 	const overlay = document.createElement('div');
 	overlay.className = 'modal-overlay';
@@ -187,6 +189,8 @@ function abrirModal(url, titulo = 'Ventana') {
 
 	const modal = document.createElement('div');
 	modal.className = 'modal-content-new';
+	modal.style.height = pct_alto + '%';
+	modal.style.width = pct_ancho + '%';
 
 	const header = document.createElement('div');
 	header.className = 'modal-header';

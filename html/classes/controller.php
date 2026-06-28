@@ -80,7 +80,8 @@ class Controller {
 		$key_field,
 		$search_field,
 		$estructura,
-		$type = "table"
+		$type = "table",
+		$icon = "fa-table-cells-large"
 		){
 			
 		$this->plural_name = $plural_name;
@@ -91,7 +92,7 @@ class Controller {
 		$this->estructura = $estructura;
 		$this->search_field = $search_field ;
 		$this->entity_type = $type;
-		
+		$this->icon = $icon;
 	}
 	
 

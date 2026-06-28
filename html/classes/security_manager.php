@@ -66,12 +66,19 @@ class SecurityManager {
 		//singleton
 		if (empty(self::$companies )){
 			
-		
-			$q = "select distinct e.id, e.empresa 
+			if (self::UserIsAdmin($user_id)){
+				$q = "select distinct e.id, e.empresa 
+				from app_empresas e";
+
+			}else{
+				$q = "select distinct e.id, e.empresa 
 				from app_empresas_usuarios eu 
 				left join app_empresas e on eu.id_empresa = e.id
 				where eu.id_usuario = '$user_id'";
 
+			}
+		
+			
 			self::$companies = query($q);
 						
 		}
