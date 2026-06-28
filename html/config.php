@@ -43,5 +43,5 @@ function dump($var){
 }
 
 
-$cypherKey = $_ENV['CYPHERKEY'] ?? '';
+$cypherKey = $_ENV['CYPHERKEY'] ?? 'key_sample';
 define('__CYPHERKEY__', $cypherKey);
