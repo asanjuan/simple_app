@@ -11,27 +11,19 @@
 
 <div class="container py-4">
 
-    <div class="card shadow-sm">
-
-        <div class="card-header">
-            <h4 class="mb-0">Procesar registros</h4>
-        </div>
 
         <div class="card-body">
 
             <div class="row g-3 align-items-end">
 
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="form-label">Tabla</label>
                     <select id="tabla" class="form-select">
                         <option value="">Seleccione...</option>
-                        <option value="clientes">Clientes</option>
-                        <option value="productos">Productos</option>
-                        <option value="pedidos">Pedidos</option>
                     </select>
                 </div>
 
-                <div class="col-md-5">
+                <div class="col-md-4">
                     <label class="form-label">Filtro</label>
                     <input
                         type="text"
@@ -58,6 +50,15 @@
                         Buscar
                     </button>
                 </div>
+                <div class="col-md-2 d-grid">
+
+                    <button
+                        class="btn btn-success"
+                        onclick="procesarSeleccionados()">
+                        Aceptar
+                    </button>
+        
+                </div>
 
             </div>
 
@@ -73,7 +74,7 @@
                         <th style="width:40px;">
                             <input type="checkbox" id="seleccionarTodo">
                         </th>
-                        <th>ID</th>
+                       
                         <th>Descripción</th>
                     </tr>
 
@@ -89,21 +90,73 @@
 
         </div>
 
-        <div class="card-footer text-end">
+       
 
-            <button
-                class="btn btn-success"
-                onclick="procesarSeleccionados()">
-                Aceptar
-            </button>
-
-        </div>
-
-    </div>
 
 </div>
 
 <script>
+
+document.addEventListener("DOMContentLoaded", onload);
+let myapp = parent.MyApp;
+let entidades = null;
+
+const optionentidades = document.getElementById("tabla");
+
+//LOAD DEL FORMULARIO
+function onload(){
+    
+    debugger;
+    loadEntities();
+
+}
+
+//carga del option de entidades
+function loadEntities(){
+    debugger;
+    var query = `{
+        "select": [
+            "entity",
+            "campo_principal",
+            "plural_name"
+        ],
+        "from": {
+            "table": "app_entities",
+            "alias": ""
+        },
+        "joins": [],
+        "where": "entity in ('app_modules', 'app_entities', 'app_dominios', 'app_plugin_library')",
+        "groupBy": [],
+        "having": "",
+        "orderBy": [
+            "plural_name"
+        ],
+        "limit": null,
+        "distinct": false
+    }`;
+    myapp.api.query(query).then( data => {
+        
+        entidades = data;
+        
+        for (const item of data) {
+            const option = document.createElement("option");
+            option.value = item.entity;
+            option.textContent = item.plural_name;
+            optionentidades.appendChild(option);
+        }
+    });
+    
+    
+}
+
+function lookupentity(entidad){
+    for (const item of entidades) {
+        if (item.entity == entidad){
+            return item;
+        }
+    }
+    return null;
+}
 
 function buscar() {
 
@@ -121,15 +174,47 @@ function buscar() {
     // mostrarResultados(registros);
     //
     // ==========================================
-
-}
-
-
-function mostrarResultados(registros) {
-
+    if (optionentidades.value == "") return;
+    debugger;
+    
+    
+    let filtrotxt = filtro.value;
+    let entidad = optionentidades.value;
+    let objentity = lookupentity(entidad);
+    
+    let campo_principal = objentity.campo_principal;
+    
+    var query = `{
+        "select": [
+            "*"
+        ],
+        "from": {
+            "table": "${entidad}",
+            "alias": ""
+        },
+        "joins": [],
+        "where": "${campo_principal} like '%${filtrotxt}%'",
+        "groupBy": [],
+        "having": "",
+        "orderBy": [],
+        "limit": 100,
+        "distinct": false
+    }`;
+    
     const tbody = document.getElementById("resultado");
 
     tbody.innerHTML = "";
+    
+    
+    myapp.api.query(query).then( data => {
+        
+        mostrarResultados(data,campo_principal);
+    });
+}
+
+
+function mostrarResultados(registros, campo_principal) {
+    const tbody = document.getElementById("resultado");
 
     registros.forEach(r => {
 
@@ -141,8 +226,8 @@ function mostrarResultados(registros) {
                         class="registro"
                         value="${r.id}">
                 </td>
-                <td>${r.id}</td>
-                <td>${r.texto}</td>
+                
+                <td>${r[campo_principal]}</td>
             </tr>
         `);
 
