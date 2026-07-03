@@ -20,23 +20,29 @@ class EntityApi extends RestApi {
 
         $controller = $_GET['controller'];
         $messages = [];
-
+        
         foreach ($data as $record){
             try{
 
         
                 if (isset($record['id'])){
-                    dbupdate($controller, $record, "id");
-                    $messages [] = ["id" => $record['id'], "message" => "Updated"];
-    
+                    //upsert
+                    if (dbexists($controller,$record['id'])){
+                        dbupdate($controller, $record, "id");
+                        $messages [] = ["id" => $record['id'], "message" => "Updated", "record" => $record ];
+                    }else{
+                        dbinsert($controller, $record,  true); //verbatim copy id included
+                        $messages [] = ["id" => $new_id, "message" => "Inserted", "record" => $record ];
+                    }
+                    
                 }else{
                     $new_id = dbinsert($controller, $record);
-                    $messages [] = ["id" => $new_id, "message" => "Inserted"];
+                    $messages [] = ["id" => $new_id, "message" => "Inserted", "record" => $record ];
                     
                 }
     
             }catch(PDOException $e){
-                $messages [] = ["id" => $record['id'], "message" => "Error"];
+                $messages [] = ["id" => $record['id'], "error" => $e, "record" => $record ];
             }
         }
         

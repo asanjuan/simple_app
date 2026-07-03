@@ -56,6 +56,26 @@ class app_entities_plugin extends PluginInterface {
 			} catch (PDOException $e) {
 				$this->showMessage("Error en la consulta: " . $e->getMessage());
 			}
+		}else if ($operation == "alter"){
+			try{
+				$entity = EntityManager::GetEntityById($datos['id_entity']);
+				$table_name = $entity['entity'];
+				$col_name = $datos['dbcolumn'];
+				$type = EntityManager::getDBtype($datos['type'], $datos['max']);
+				$default = $datos['value'];
+				
+				$sql = "alter table $table_name  modify $col_name $type NULL";
+				if ($default != ""){
+				    $sql .= " DEFAULT " . quote($default, $type);
+				}
+				//trace($sql);
+				query($sql);
+				
+				$this->showMessage("COLUMNA $table_name.$col_name Modificada correctamente");
+				
+			} catch (PDOException $e) {
+				$this->showMessage("Error en la consulta: " . $e->getMessage());
+			}
 		}
 	}
 	public function postUploadFile($filedata){ $this->showMessage("postUploadFile");}

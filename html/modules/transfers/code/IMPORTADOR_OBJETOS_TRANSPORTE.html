@@ -100,6 +100,7 @@
 document.addEventListener("DOMContentLoaded", onload);
 let myapp = parent.MyApp;
 let entidades = null;
+let lista_objetos = null;
 
 const optionentidades = document.getElementById("tabla");
 
@@ -207,7 +208,7 @@ function buscar() {
     
     
     myapp.api.query(query).then( data => {
-        
+        lista_objetos = data;
         mostrarResultados(data,campo_principal);
     });
 }
@@ -224,7 +225,7 @@ function mostrarResultados(registros, campo_principal) {
                     <input
                         type="checkbox"
                         class="registro"
-                        value="${r.id}">
+                        value="${r.id}" data-description="${r[campo_principal]}">
                 </td>
                 
                 <td>${r[campo_principal]}</td>
@@ -248,9 +249,9 @@ document.getElementById("seleccionarTodo").addEventListener("change", function (
 function procesarSeleccionados() {
 
     const seleccionados = [];
-
+debugger;
     document.querySelectorAll(".registro:checked").forEach(c => {
-        seleccionados.push(c.value);
+        seleccionados.push(  { value: c.value , description: c.getAttribute("data-description") } );
     });
 
     // ==========================================
@@ -259,7 +260,39 @@ function procesarSeleccionados() {
     // "seleccionados" contiene los IDs elegidos.
     //
     // ==========================================
+    
 
+    let filtrotxt = filtro.value;
+    let entidad = optionentidades.value;
+    let objentity = lookupentity(entidad);
+    let solution_id = myapp.form.getFieldValue("id");
+    
+    
+    let lista_upsert = [];
+    
+    seleccionados.forEach( item => {
+        let record = {
+            object_id : item.value,
+            object_name: item.description,
+            entity : entidad,
+            id_solution : solution_id
+        };
+        
+        lista_upsert.push(record);
+        
+    });
+    
+    console.log (lista_upsert);
+    myapp.api.upsert("app_solution_objects", lista_upsert).then( data => {
+        console.log(data);
+        let overlay = parent.document.getElementsByClassName("modal-overlay");
+        if (overlay) parent.cerrarModal(overlay[0]);
+        parent.cargarSubgrids();
+    })
+    .catch( error => {
+        console.error(error);
+    });
+    
 }
 
 </script>

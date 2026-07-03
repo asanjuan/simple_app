@@ -321,7 +321,8 @@ class EntityManager {
 		$val = $type;
 		switch ($type){
 			case "text": $val = "varchar($max)"; break;
-			case "textarea": $val = "MEDIUMTEXT"; break;
+			case "textarea": $val = "MEDIUMTEXT"; break; //16MB
+			case "textarealong": $val = "LONGTEXT"; break; //4GB
 			case "password": $val = "varchar($max)"; break;
 			case "guid": $val = "char(32)"; break;
 			case "file": $val = "varchar(255)"; break;

@@ -45,6 +45,77 @@ class ConfigSingleton
 	}
 }
 
+class Http {
+	function get($url, $securityToken)
+	{
+
+
+		$headers = [
+			"Securitytoken: $securityToken",
+			"Content-Type: application/json"
+		];
+
+		$ch = curl_init($url);
+
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+		// Ejecutamos la solicitud
+		$response = curl_exec($ch);
+
+		// Verificamos si hay errores
+		if (curl_errno($ch)) {
+			echo 'Error: ' . curl_error($ch);
+		}
+		//echo $response;
+		// Cerramos la sesi�n cURL
+		curl_close($ch);
+
+		return json_decode($response, true);
+	}
+
+	public static function post($url, $data, $rheaders = [] )
+	{
+
+
+		$headers = [
+			"Content-Type: application/json"
+		];
+		$headers_send = array_merge($headers, $rheaders);
+		dump( $headers_send);
+		$ch = curl_init($url);
+
+		// Configuramos cURL para una solicitud POST
+		curl_setopt($ch, CURLOPT_POST, 1);
+
+		if ($data !== null) {
+			// Codificamos el arreglo como JSON
+			$json_data = json_encode($data);
+
+			// Establecemos las opciones para la solicitud POST
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
+		}
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers_send);
+
+		// Configuramos para recibir la respuesta en lugar de imprimir
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		// Ejecutamos la solicitud
+		$response = curl_exec($ch);
+		dump($response);
+		// Verificamos si hay errores
+		if (curl_errno($ch)) {
+			echo 'Error: ' . curl_error($ch);
+		}
+
+		// Cerramos la sesi�n cURL
+		curl_close($ch);
+
+		return json_decode($response, true);
+	}
+}
+
 function new_guid()
 {
 	return strtoupper(bin2hex(random_bytes(16)));

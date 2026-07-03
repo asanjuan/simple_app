@@ -42,6 +42,25 @@ class consultas_plugin extends PluginInterface {
 			} catch (PDOException $e) {
 				$this->showMessage("Error en la consulta: " . $e->getMessage());
 			}
+		}else if ($operation == "copy-to" ){
+			try{
+			    
+				$this->datos = query($datos["query"]); 
+				$remote_controller = $datos["remote_entity"];
+				
+				$remote = dbgetbyid("app_remote_environments",$datos["id_entorno"]);
+				$remote['url'] .= '/api/entity.php?controller=' .$remote_controller;
+				$apikey = $remote['apikey'];
+				
+				dump($remote);
+				$headers = [];
+				$headers [] = "Apikey: " .$apikey ;
+				$respuesta = Http::post($remote['url'], $this->datos, $headers);
+				dump($respuesta);
+		
+			} catch (PDOException $e) {
+				$this->showMessage("Error en la consulta: " . $e->getMessage());
+			}
 		}
 	}
 	public function postUploadFile($filedata){ $this->showMessage("postUploadFile");}

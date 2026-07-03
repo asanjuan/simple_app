@@ -1,10 +1,8 @@
 <?php
 include_once 'config.php';
+include_once 'dbconfig.php';
 
-$db_servername = "db";
-$db_username = "root";
-$db_password = "pass";
-$dbname = "simple_app";
+
 $conn = get_DB();
 
 
@@ -115,15 +113,17 @@ function appendOR($exp,$condition){
 	funci�n gen�rica, toma una tabla y un array e inserta los datos del array en la tabla 
 	emparejando los nombres de las columnas con el array
 */
-function dbinsert($tabla, $datos){
+function dbinsert($tabla, $datos, $verbatim = false){
 	global $conn;
 	
 	$datos = array_map(function($value) {
                         return $value === "" ? NULL : $value;
                      }, $datos);
 	
-	$new_id = new_guid(); 
-	$datos['id'] = $new_id;
+	if(!$verbatim){
+		$new_id = new_guid(); 
+		$datos['id'] = $new_id;
+	} 
 	
 	$campos = array_keys($datos);
 	$fields = ""; $params = "";
@@ -164,6 +164,13 @@ function dbgetbyid($tabla,$id){
 	$sql = "Select * from ".$tabla." where id =" . quote($id);	
 	$datos = query1($sql); 
 	return $datos;
+}
+
+function dbexists($tabla,$id){
+	$sql = "Select 1 from ".$tabla." where id =" . quote($id);	
+	$datos = query($sql); 
+	if (count($datos)==1) return true;
+	else return false;
 }
 
 function dbupdate($tabla, $datos, $key ="id"){
