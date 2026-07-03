@@ -1,0 +1,27 @@
+version: "2"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: simple_app
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "8085:80"
+
+  db:
+    image: mariadb:11.8
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: pass
+      MARIADB_DATABASE: simple_app
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db:/docker-entrypoint-initdb.d:ro
+
+volumes:
+  mysql_data:
