@@ -29,15 +29,15 @@ class EntityApi extends RestApi {
                     //upsert
                     if (dbexists($controller,$record['id'])){
                         dbupdate($controller, $record, "id");
-                        $messages [] = ["id" => $record['id'], "message" => "Updated", "record" => $record ];
+                        $messages [] = ["id" => $record['id'], "message" => "Updated" ];
                     }else{
                         dbinsert($controller, $record,  true); //verbatim copy id included
-                        $messages [] = ["id" => $new_id, "message" => "Inserted", "record" => $record ];
+                        $messages [] = ["id" => $new_id, "message" => "Inserted" ];
                     }
                     
                 }else{
                     $new_id = dbinsert($controller, $record);
-                    $messages [] = ["id" => $new_id, "message" => "Inserted", "record" => $record ];
+                    $messages [] = ["id" => $new_id, "message" => "Inserted" ];
                     
                 }
     

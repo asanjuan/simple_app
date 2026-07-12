@@ -33,23 +33,23 @@ function trace($sql){
 //************************************************************************************************
 // consulta para recuperar datos de BD
 //************************************************************************************************
-function query($sql){
+function query($sql,$params = []){
 	global $conn;
 	if (__DEBUGSQL__) trace($sql); 
 	
 	$consulta = $conn->prepare($sql);
-	$consulta->execute();
+	$consulta->execute($params);
 	return  $consulta->fetchAll(PDO::FETCH_ASSOC);
 
 }
 
-function query1($sql){
+function query1($sql,$params = []){
 	global $conn;
 
 	if (__DEBUGSQL__) trace($sql); 
 	
 	$consulta = $conn->prepare($sql);
-	$consulta->execute();
+	$consulta->execute($params);
 	return  $consulta->fetch(PDO::FETCH_ASSOC);
 
 }
@@ -211,6 +211,26 @@ function dbupdate($tabla, $datos, $key ="id"){
 	return false;
 
 	
+}
+
+/*
+UPSERT ES UNA FUNCIÓN MUY CÓMODA PARA TODOS LOS DESPLIEGUES
+*/
+function dbupsert($tabla, $record){
+	$new_id = null;
+	if (isset($record['id'])){
+		//upsert
+		if (dbexists($tabla,$record['id'])){
+			dbupdate($tabla, $record, "id");
+		}else{
+			dbinsert($tabla, $record,  true); //verbatim copy id included
+		}
+		
+	}else{
+		$new_id = dbinsert($tabla, $record);
+		
+	}
+	return $new_id;
 }
 
 

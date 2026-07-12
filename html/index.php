@@ -8,6 +8,7 @@ include_once 'classes/entity_manager.php';
 include_once 'classes/form_manager.php';
 include_once 'classes/security_manager.php';
 include_once 'classes/report_manager.php';
+include_once 'classes/deployment_controller.php';
 
 login_test();
 check_URL_BASE();

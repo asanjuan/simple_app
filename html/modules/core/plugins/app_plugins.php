@@ -54,6 +54,11 @@ class app_entities_plugin extends PluginInterface {
 				$metadata = EntityManager::GetEntityById($id_entity);
 				$module = EntityManager::GetModuleById($metadata['id_module']);
 				$filename = "modules/".$module['folder']."/plugins/".$fichero;
+				$directorio = "modules/".$module['folder']."/plugins/";
+			
+				if (!file_exists($directorio)){
+					mkdir($directorio, 0777, true);
+				}
 				
 				//guardamos en BBDD
 				//$r = ["id"=> $item, "code" => $datos['code']];

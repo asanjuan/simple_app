@@ -375,6 +375,9 @@ class EntityManager {
 		
 	}
 	
+
+
+
 }
 //utilidad para saber si el registro tiene una columna de estado de bloqueo (status) activo o inactivo
 function get_status_field($estructura){

@@ -83,7 +83,7 @@ class Http {
 			"Content-Type: application/json"
 		];
 		$headers_send = array_merge($headers, $rheaders);
-		dump( $headers_send);
+		//dump( $headers_send);
 		$ch = curl_init($url);
 
 		// Configuramos cURL para una solicitud POST
@@ -103,7 +103,7 @@ class Http {
 
 		// Ejecutamos la solicitud
 		$response = curl_exec($ch);
-		dump($response);
+		//dump($response);
 		// Verificamos si hay errores
 		if (curl_errno($ch)) {
 			echo 'Error: ' . curl_error($ch);
