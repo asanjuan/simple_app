@@ -5,11 +5,17 @@
     <title>Selección de registros</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        html {
+          /* Scales everything relative to this base */
+          font-size: 12px; 
+        }
+    </style>
 </head>
 
 <body class="bg-light">
 
-<div class="container py-4">
+<div class="container-fluid py-4">
 
 
         <div class="card-body">
@@ -126,7 +132,8 @@ function loadEntities(){
             "alias": ""
         },
         "joins": [],
-        "where": "entity in ('app_modules', 'app_entities', 'app_dominios', 'app_plugin_library')",
+        "where": "entity in ('app_modules', 'app_entities', 'app_dominios', 'app_plugins', \
+            'app_plugin_library', 'app_scripts')",
         "groupBy": [],
         "having": "",
         "orderBy": [
