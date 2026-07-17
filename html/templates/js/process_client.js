@@ -56,28 +56,62 @@ function cargarProceso(proc) {
 			var currentDiv = null;
 
             data.fases.forEach(function(fase){
-                if (fase.tipo_fase != 1 || fase.activo || fase.completado){
+
+                //if (fase.tipo_fase != 1 || fase.activo || fase.completado){
+				//if (fase.tipo_fase != 1 ){
 					var faseDiv = document.createElement("div");
 					faseDiv.classList.add("process_step");
-					if (fase.tipo_fase == 1){
+					if (fase.activo && fase.tipo_fase == 1){
 						faseDiv.classList.add("completed");
 						currentDiv = faseDiv;
-					}else  if (fase.activo) {
+					}else if (fase.activo && fase.tipo_fase != 1 ) {
 						faseDiv.classList.add("active");
 						currentDiv = faseDiv;
-					}else if (fase.completado) {
+					}else if (fase.completado || (fase.activo && fase.tipo_fase == 1 )) {
 						faseDiv.classList.add("completed");
 					}
-					faseDiv.innerHTML = "<span><strong>"  + fase.nombre + "</strong></span> ";
-					//processlist.appendChild(faseDiv);
-				}
+					faseDiv.innerHTML = "<span>"  + fase.nombre + "</span> ";
+					processlist.appendChild(faseDiv);
+				//}
 				
             });
 
 			if (currentDiv){
+				/*
+				var combo = document.createElement("div");
+				combo.classList.add("rpt-dropdown","boton-enlace");
+				var cbodesc = document.createElement("span");
+				cbodesc.innerText = "Proceso ▼";
+				combo.appendChild(cbodesc);
+				*/
+				var content = document.createElement("div");
+				content.classList.add("rpt-dropdown-content");
+				//combo.appendChild(content);
 				
-				processlist.appendChild(currentDiv);
-				var buttons  = document.createElement("span");
+				data.transiciones.forEach(function(trans){
+					var opt = document.createElement("a");
+					opt.href = "#";
+					opt.value = trans.id;
+					opt.innerHTML = trans.nombre;
+					content.appendChild(opt);
+
+					opt.addEventListener("click", function (event) {
+						event.preventDefault(); // Evitar que el enlace cambie la página
+						
+						transicion(proc, trans.id);
+					});
+
+				});
+
+				//currentDiv.appendChild(combo);
+				//var toolbar = document.getElementsByClassName("toolbar")[0];
+				//toolbar.appendChild(combo);
+				currentDiv.classList.add("rpt-dropdown");
+				currentDiv.appendChild(content);
+				
+				/*
+				//processlist.appendChild(currentDiv);
+				var buttons  = document.createElement("div");
 				buttons.classList.add("process_button_list");
 				//buttons.classList.add("flex-rows");
 				data.transiciones.forEach(function(trans){
@@ -92,7 +126,9 @@ function cargarProceso(proc) {
 					btn.innerHTML = trans.nombre;
 					buttons.appendChild(btn);
 				});
-				currentDiv.appendChild(buttons);
+				//currentDiv.appendChild(buttons);
+				proc.prepend(buttons);
+				*/
 				
 			}
 

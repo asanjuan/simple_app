@@ -13,7 +13,7 @@ class my_new_plugin extends PluginInterface {
 	    
 	}
 	public function postInsert($item, $datos){ 
-	    $datos['codigo'] = nextSequence("ventas_ofertas",date("Y"));
+	    $datos['codigo'] = nextSequence("ventas_ofertas",date("Y"),$datos['id_empresa']);
 	    $datos['estado'] =0; //borrador 
 	    
 	    $hoy = new DateTime();

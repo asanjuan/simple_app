@@ -300,6 +300,8 @@ class Form_Subgrid extends RestApi {
 		$search_fields = $obj['search_fields'];
 		
 		$opt_list = SecurityManager::getUserCompanies($_SESSION['userid']);
+		$is_admin = SecurityManager::UserIsAdmin($_SESSION['userid']);
+
 		$list = [];
 		foreach ($opt_list as $opt) {
 			$list [] = quote($opt["id"]);
@@ -308,13 +310,20 @@ class Form_Subgrid extends RestApi {
 		
 		//determinar la seguridad por empresa
 		$company_field = EntityManager::GetCompanyColumn($estructura);
-		if ($company_field ){
+		if ($company_field  ){
 			
 			if (isset($_SESSION['company'])){
 				$sql =  appendcondition($sql, $company_field['dbcolumn'] . " = ".quote($_SESSION['company']));
 			}else {
-				$sql =  appendcondition($sql, $company_field['dbcolumn'] . " in ($filtro_empresas) ");
+				$exp = $company_field['dbcolumn'] . " in ($filtro_empresas ) ";
+				$exp_nulls = $company_field['dbcolumn'] . " is null ";
+				if ($is_admin){
+					$exp =  appendOR("( $exp )", "( $exp_nulls )");
+				}
+				$sql =  appendcondition($sql, $exp);
+				
 			}
+			
 		}
 
 

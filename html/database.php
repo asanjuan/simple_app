@@ -227,7 +227,7 @@ function dbupsert($tabla, $record){
 		}
 		
 	}else{
-		$new_id = dbinsert($tabla, $record);
+		$new_id = dbinsert($tabla, $record); //new id generated
 		
 	}
 	return $new_id;
@@ -267,26 +267,27 @@ function dbdelete($tabla, $datos){
 }
 
 
-function nextSequence($nombre, $year = 0){
+function nextSequence($nombre, $year = 0, $id_empresa = ""){
 	$sql = "select * from app_numeraciones where nombre ='$nombre'";
 	$data = query1($sql);
 	$value = 1;
 	$prefix = "";
 	$longitud = 5; //longitud por defecto
 	$es_anual = false;
+	$por_empresa = false;
 
 	if (!empty($data)){
 		//usamos una numeración existente
 		$prefix = $data['prefijo'];
 
 		//hay que determinar si es una numeración anual
-		if ($data['anual']==1){
+		if ($data['anual']==1 && $data['por_empresa']!=1){
 			$es_anual = true;
 
 			//depende del año, cada año se reinicia
 			$curr_year = date("Y");
 			if ($year ==0 ) $year = $curr_year;
-			$seq = query1("select * from app_secuencias_numeraciones where id_numeracion = ".quote($data['id'])." and anio = $year");
+			$seq = query1("select * from app_secuencias_numeraciones where id_numeracion = ".quote($data['id'])." and anio = $year  and id_empresa is null");
 			if (!empty($seq)){
 				$value = $seq['siguiente']; //recuperamos el secuencial
 				$seq['siguiente'] = $value +1;
@@ -300,9 +301,49 @@ function nextSequence($nombre, $year = 0){
 				dbinsert("app_secuencias_numeraciones", $data); //creamos el nuevo registro de año
 			}
 
+		}else if ($data['anual']==1 && $data['por_empresa']==1){ //es anual y por empresa
+			$es_anual = true;
+			$por_empresa = true;
+
+			//depende del año, cada año se reinicia
+			$curr_year = date("Y");
+			if ($year ==0 ) $year = $curr_year;
+			$seq = query1("select * from app_secuencias_numeraciones where id_numeracion = ".quote($data['id'])." and anio = $year and id_empresa = ".quote($id_empresa));
+			if (!empty($seq)){
+				$value = $seq['siguiente']; //recuperamos el secuencial
+				$seq['siguiente'] = $value +1;
+				dbupdate("app_secuencias_numeraciones", $seq); //actualizamos BBDD
+			}else{
+				$data = [ 
+				"id_numeracion" => $data['id'],
+				"anio" => $year,
+				"siguiente" => ($value +1),
+				"id_empresa" => $id_empresa
+				];
+				dbinsert("app_secuencias_numeraciones", $data); //creamos el nuevo registro de año
+			}
+
+		}else if ($data['anual']!=1 && $data['por_empresa']==1){ //es por empresa, pero no por años
+			$por_empresa = true;
+
+			//depende del año, cada año se reinicia
+			$seq = query1("select * from app_secuencias_numeraciones where id_numeracion = ".quote($data['id'])." and anio is null and id_empresa = ".quote($id_empresa));
+			if (!empty($seq)){
+				$value = $seq['siguiente']; //recuperamos el secuencial
+				$seq['siguiente'] = $value +1;
+				dbupdate("app_secuencias_numeraciones", $seq); //actualizamos BBDD
+			}else{
+				$data = [ 
+				"id_numeracion" => $data['id'],
+				"siguiente" => ($value +1),
+				"id_empresa" => $id_empresa
+				];
+				dbinsert("app_secuencias_numeraciones", $data); //creamos el nuevo registro de año
+			}
+
 
 		}else{
-			//hay una numeración, pero no es de tipo anual
+			//hay una numeración, pero no es de tipo anual ni por empresa
 			$value = $data['siguiente'];
 			$data['siguiente'] = $value +1;
 
@@ -324,14 +365,25 @@ function nextSequence($nombre, $year = 0){
 		dbinsert("app_numeraciones", $data);
 	}
 
-	$formated_value = str_pad($value,$longitud,'0',STR_PAD_LEFT );
-	if ($es_anual){
-		$formated_value = $year . "-".$formated_value;
-	}
+	$parts_array = [];
+	$formated_value = "";
+	$formatted_number = str_pad($value,$longitud,'0',STR_PAD_LEFT );
+	
 	if ($prefix != ""){
-		$formated_value = $prefix . "-".$formated_value;
+		$parts_array [] = $prefix ;
 	}
+	if ($por_empresa){
+		$r = dbgetbyid("app_empresas",$id_empresa);
+		if (!empty($r)){
+			$parts_array [] = $r['prefix'];
+		}
+	}
+	if ($es_anual){
+		$parts_array [] = $year ;
+	}
+	$parts_array [] = $formatted_number;
 
+	$formated_value = implode("-", $parts_array);
 	return $formated_value;
 }
 
