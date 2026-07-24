@@ -19,8 +19,9 @@ interface IDeploymentProvider
 class DeploymentRegistry
 {
     private static array $adapters = [
-        'app_modules'   =>  ['class' => ModuleDeployment::class, 'priority' => 0 ],
-        'app_entities'  =>  ['class' => EntityDeployment::class, 'priority' => 1 ]
+        'app_modules'   =>  ['class' => generic_deployment::class, 'priority' => 0 ],
+        'app_entities'  =>  ['class' => EntityDeployment::class, 'priority' => 1 ],
+        'app_dominios'  =>  ['class' => DomainDeployment::class, 'priority' => 3 ],
     ];
 
     public static function get(string $type): IDeploymentProvider
@@ -74,8 +75,57 @@ class EntityDeployment extends generic_deployment
         $entity_obj = [];
         $entity_obj["entity"] = dbgetbyid( $this->entityName, $id ) ;
         $entity_obj["columns"] = query("select * from app_entity_columns where id_entity = " . quote($id ));
+        $entity_obj["views"] = query("select * from app_views where id_entity = " . quote($id ));
+        $entity_obj["forms"] = query("select * from app_forms where id_entity = " . quote($id ));
+        $entity_obj["form_tabs"] = $this->get_form_tabs( $id );
+        $entity_obj["form_areas"] = $this->get_form_areas( $id );
+        $entity_obj["form_sections"] = $this->get_form_sections( $id );
+        $entity_obj["form_controls"] = $this->get_user_controls( $id );
 
         return json_encode($entity_obj);
+    }
+
+    function get_user_controls($id){
+
+        return query("select us.* 
+                from 
+                app_entities e 
+                inner join app_forms s on s.id_entity = e.id
+                inner join app_form_areas a on a.id_form = s.id
+                inner join app_form_sections sec on sec.id_area = a.id
+                inner join app_user_controls us on us.id_seccion = sec.id
+                where e.id=". quote($id ));
+    }
+
+    function get_form_sections($id){
+
+        return query("select sec.* 
+                from 
+                app_entities e 
+                inner join app_forms s on s.id_entity = e.id
+                inner join app_form_areas a on a.id_form = s.id
+                inner join app_form_sections sec on sec.id_area = a.id
+                where e.id=". quote($id ));
+    }
+
+    function get_form_areas($id){
+
+        return query("select a.* 
+                from 
+                app_entities e 
+                inner join app_forms s on s.id_entity = e.id
+                inner join app_form_areas a on a.id_form = s.id
+                where e.id=". quote($id ));
+    }
+
+    function get_form_tabs($id){
+
+        return query("select t.* 
+                from 
+                app_entities e 
+                inner join app_forms s on s.id_entity = e.id
+                inner join app_form_tabs t on t.id_form = s.id
+                where e.id=". quote($id ));
     }
 
     public function apply($json){
@@ -88,6 +138,22 @@ class EntityDeployment extends generic_deployment
         }
 
         self::deployEntity($record);
+        
+        foreach($record["forms"] as $element){
+            dbupsert("app_forms", $element);
+        }
+        foreach($record["form_tabs"] as $element){
+            dbupsert("app_form_tabs", $element);
+        }
+        foreach($record["form_areas"] as $element){
+            dbupsert("app_form_areas", $element);
+        }
+        foreach($record["form_sections"] as $element){
+            dbupsert("app_form_sections", $element);
+        }
+        foreach($record["form_controls"] as $element){
+            dbupsert("app_user_controls", $element);
+        }
 
     }
     
@@ -136,7 +202,10 @@ class EntityDeployment extends generic_deployment
 			}
 		}
 
+        
+
 	}
+
 
 
     public static function getTableColumns($table)
@@ -216,9 +285,27 @@ class EntityDeployment extends generic_deployment
 	}
 }
 
-class ModuleDeployment extends generic_deployment
+class DomainDeployment  extends generic_deployment
 {
-   
+    public function export($id){
+
+        $entity_obj = [];
+        $entity_obj["domain"] = dbgetbyid( $this->entityName, $id ) ;
+        $entity_obj["options"] = query("select * from app_optionsets where id_dominio = " . quote($id ));
+
+        return json_encode($entity_obj);
+
+    }
+
+    public function apply($json){
+        $record = json_decode($json, true);
+        dbupsert($this->entityName, $record["domain"]);
+
+        foreach($record["options"] as $option){
+            dbupsert("app_optionsets", $option);
+        }
+
+    }
 }
 
 

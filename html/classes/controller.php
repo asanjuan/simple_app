@@ -259,9 +259,11 @@ class Controller {
 				$this->onCustomButton($operation, $item, $_POST);
 			}
 			//recargamos
-			$datos = dbgetbyid($this->db_table,$item);
-			
-			$this->status_buttons($datos);
+			if ($this->entity_type == "table"){
+
+				$datos = dbgetbyid($this->db_table,$item);
+				$this->status_buttons($datos);
+			}
 			$this->preRenderform($item,$datos);
 			$campos_html = FormManager::Run($this->this_controller, $datos);
 			
@@ -272,9 +274,6 @@ class Controller {
 
 			//entramos aquí cuando el formulario está en modo ALTA
 			//lo primero es tratar la seguridad de la columna empresa.
-			
-			
-
 
 			$datos = array();
 			if ($this->entity_type == "table")
