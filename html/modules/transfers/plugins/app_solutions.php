@@ -48,12 +48,29 @@ class my_new_plugin extends PluginInterface {
                 $objetos = query($sql);
                 //dump($objetos);
                 
-                //ordenar
+                //recuperar la prioridad por tipo de objeto
+                foreach ($objetos as &$objeto){
+                    $priority = DeploymentRegistry::getPriority($objeto['entity']);
+                    $objeto['priority'] = $priority;
+
+                }
+                unset($objeto);
+                
+                //ordenar por la prioridad
+                usort($objetos, function($a, $b) {
+                    return ($a['priority'] ?? PHP_INT_MAX) <=> ($b['priority'] ?? PHP_INT_MAX);
+                });
                 
                 //recorrer
                 foreach ($objetos as $objeto){
+                    
                     $prov = DeploymentRegistry::get($objeto['entity']);
-                    $b64 = $prov->apply($objeto['json_data']);
+                    if ($prov->validate($objeto['json_data'])){
+                        $b64 = $prov->apply($objeto['json_data']);
+                        
+                    }else {
+                        $this->showMessage( $objeto['entity'] . " no válido");
+                    }
 
                 }
                  $this->showMessage("Despliegue completado");

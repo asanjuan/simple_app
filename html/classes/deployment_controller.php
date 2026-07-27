@@ -10,7 +10,7 @@ interface IDeploymentProvider
 
     public function apply($json);
 
-    public function validate();
+    public function validate($json);
 
     public function priority();
 }
@@ -22,6 +22,8 @@ class DeploymentRegistry
         'app_modules'   =>  ['class' => generic_deployment::class, 'priority' => 0 ],
         'app_entities'  =>  ['class' => EntityDeployment::class, 'priority' => 1 ],
         'app_dominios'  =>  ['class' => DomainDeployment::class, 'priority' => 3 ],
+        'app_report_templates'  =>  ['class' => ReportDeployment::class, 'priority' => 4 ],
+        'app_proceso_entidad'  =>  ['class' => ProcessDeployment::class, 'priority' => 5 ],
     ];
 
     public static function get(string $type): IDeploymentProvider
@@ -36,6 +38,14 @@ class DeploymentRegistry
         $obj->init($type,$priority);
 
         return $obj;
+    }
+    public static function getPriority(string $type)
+    {
+        $priority = 999999;
+        if (key_exists($type, self::$adapters)){
+            $priority = self::$adapters[$type]['priority'];
+        }
+        return $priority;
     }
 }
 
@@ -58,8 +68,8 @@ class generic_deployment implements IDeploymentProvider
         dbupsert($this->entityName, $record);
     }
 
-    public function validate(){
-        return true;
+    public function validate($json){
+        return ($json != "");
     }
 
     public function priority(){
@@ -303,6 +313,61 @@ class DomainDeployment  extends generic_deployment
 
         foreach($record["options"] as $option){
             dbupsert("app_optionsets", $option);
+        }
+
+    }
+}
+
+
+class ReportDeployment  extends generic_deployment
+{
+    public function export($id){
+
+        $entity_obj = [];
+        $entity_obj["template"] = dbgetbyid( $this->entityName, $id ) ;
+        $entity_obj["queries"] = query("select * from app_report_queries where id_template = " . quote($id ));
+
+        return json_encode($entity_obj);
+
+    }
+
+    public function apply($json){
+        $record = json_decode($json, true);
+        dbupsert($this->entityName, $record["template"]);
+
+        foreach($record["queries"] as $option){
+            dbupsert("app_report_queries", $option);
+        }
+
+    }
+}
+
+
+class ProcessDeployment  extends generic_deployment
+{
+    public function export($id){
+
+        $entity_obj = [];
+        $entity_obj["process"] = dbgetbyid( $this->entityName, $id ) ;
+        $entity_obj["phases"] = query("select * from app_fases_proceso where id_proceso = " . quote($id ));
+        $entity_obj["transitions"] = query("select * from app_transiciones_proceso where id_proceso = " . quote($id ));
+        return json_encode($entity_obj);
+
+    }
+
+    public function apply($json){
+        $record = json_decode($json, true);
+        dbupsert($this->entityName, $record["process"]);
+        $id = $record["process"]['id'];
+        
+        dbdelete("app_transiciones_proceso", ['id_proceso'=> $id]);
+        dbdelete("app_fases_proceso", ['id_proceso'=> $id]);
+
+        foreach($record["phases"] as $option){
+            dbupsert("app_fases_proceso", $option);
+        }
+        foreach($record["transitions"] as $option){
+            dbupsert("app_transiciones_proceso", $option);
         }
 
     }

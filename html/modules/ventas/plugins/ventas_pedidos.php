@@ -1,14 +1,14 @@
 <?php 
 
-PluginManager::RegisterPlugin(new my_new_plugin());
+PluginManager::RegisterPlugin(new my_new_plugin_pedido());
 
-class my_new_plugin extends PluginInterface {
+class my_new_plugin_pedido extends PluginInterface {
 	
 	protected $data; //use it at will between related events
 	
 	public function postUpdate($item, $datos){ }
 	public function postInsert($item, $datos){ 
-	    $datos['codigo'] = nextSequence("ventas_pedidos");
+	    $datos['codigo'] = nextSequence("ventas_pedidos",date("Y"),$datos['id_empresa']);
 	    $datos['id']= $item;
 	    dbupdate("ventas_pedidos", $datos);
 	}
