@@ -1,16 +1,5 @@
 <?php 
-
-
-require_once '../api/rest_api.php';
-include_once '../config.php';
-include_once '../utilities.php';
-include_once '../database.php';
-include_once '../classes/entity_manager.php';
-include_once '../classes/loginmanager.php';
-include_once '../classes/utility_traits.php';
-include_once '../classes/plugin_manager.php';
-include_once '../classes/form_manager.php';
-include_once '../classes/security_manager.php';
+require dirname(__DIR__).'/autoload.php';
 
 
 function get_grid_last_filter($entity){
@@ -43,6 +32,7 @@ class Form_Subgrid extends RestApi {
 	protected $access_read = true;
 	protected $access_update = true;
 	protected $has_quick_create_form = false;
+	protected $has_quick_edit_form = false;
 	protected $url_parent_related = "";
 
 	protected function ExecutePost($data){
@@ -61,7 +51,9 @@ class Form_Subgrid extends RestApi {
 			case "delete" : $this->execute_delete($data); break;
 			case "duplicate" : $this->execute_duplicate($data); break;
 			case "render" : $this->execute_render($data); break;
+			case "render_update" : $this->execute_render_update($data); break;
 			case "insert" : $this->execute_insert($data); break;
+			case "update" : $this->execute_update($data); break;
 			case "export" : $this->execute_export($data); break;
 			case "up" : $this->execute_up($data); break;
 			case "down" : $this->execute_down($data); break;
@@ -73,7 +65,7 @@ class Form_Subgrid extends RestApi {
 		
 	}
 	
-	
+	/*
 	public function loadPlugins($entidad){
 		PluginManager::RegisterForm($this);
 		$base_dir = dirname(__DIR__, 1);
@@ -88,6 +80,7 @@ class Form_Subgrid extends RestApi {
 			//}
 		}	
 	}
+	*/
 	
 	public function loadPermissions($entity_id , $enabled){
 		
@@ -190,7 +183,7 @@ class Form_Subgrid extends RestApi {
 				dbdelete($table,$x);
 				$this->postDelete($item);
 			}catch(Exception $ex){
-				$this->showMessage( $ex->getMessage());
+				$this->showError( $ex->getMessage());
 			}
 			
 		}
@@ -216,7 +209,7 @@ class Form_Subgrid extends RestApi {
 		try{
 			$this->onCustomButton($operation,'', $elements);
 		}catch(Exception $ex){
-			$this->showMessage( $ex->getMessage());
+			$this->showError( $ex->getMessage());
 		}
 		//después de borrar, refrescamos grid
 		$this->execute_select($data);
@@ -247,7 +240,7 @@ class Form_Subgrid extends RestApi {
 				$this->postInsert($new_id, $x);
 				$this->postDuplicate($item, $new_id);
 			}catch(Exception $ex){
-				$this->showMessage( $ex->getMessage());
+				$this->showError( $ex->getMessage());
 			}
 		}
 
@@ -281,6 +274,7 @@ class Form_Subgrid extends RestApi {
 		$estructura = EntityManager::GetEstructura($metadata['entity']);
 		$this->view_list = EntityManager::GetVistas($obj['id_entity']);
 		$this->has_quick_create_form = FormManager::HasQuickForm($obj['id_entity']);
+		$this->has_quick_edit_form = FormManager::HasQuickEditForm($obj['id_entity']);
 		$this->buttons = EntityManager::GetFormButtons($metadata['entity']);
 		//dump($this->buttons);
 
@@ -365,7 +359,7 @@ class Form_Subgrid extends RestApi {
 			$total_registros = count_records($sql); //obtenemos un total de los registros
 		
 		}catch (Exception $ex){
-			$this->showMessage($ex->getMessage());
+			$this->showError($ex->getMessage());
 			
 		}
 		
@@ -381,7 +375,7 @@ class Form_Subgrid extends RestApi {
 			$datos = query($sql); //añadir los filtros que falten
 		
 		}catch (Exception $ex){
-			$this->showMessage($ex->getMessage());
+			$this->showError($ex->getMessage());
 			
 		}		
 		
@@ -392,12 +386,16 @@ class Form_Subgrid extends RestApi {
 		$listado_html = generarTablaHTML($datos, $this->this_controller, $key_field, false,true,$imagefield);
 		$bloque_mensajes = "";
 		foreach ($this->messages as $msg ){
-	
 			$bloque_mensajes .= '<div class="message"> ' . ($msg) . '</div>';
-			
 		}
-
+		foreach ($this->errors as $msg ){
+			$bloque_mensajes.= '<div class="message-error"> ' . ($msg) . '</div>';
+		}
 		$botones = '<div class="grid-buttons-group">';
+		if ($this->access_update &&  $this->has_quick_edit_form) {
+			$botones .=  '<a class="boton-enlace btn-edit" href="#" data-operation="edit"><i class="fa-solid fa-pen-to-square"></i> <span> Editar </span></a> ';
+		}
+		
 		if ($this->access_insert) {
 			if ($this->has_quick_create_form){
 				$botones .=  '<a class="boton-enlace btn-new" href="#" data-operation="new"><i class="fas fa-plus"></i> <span> Nuevo </span></a> ';		
@@ -469,6 +467,8 @@ class Form_Subgrid extends RestApi {
 		$this->loadPlugins($controller);
 		
 		$record = array();
+
+		//establece un registro relacionado por defecto (por si es un subgrid)
 		if (isset($data["field"]) && $data["field"] != ""){
 			$record[$data["field"]] = $data["value"];
 		}
@@ -478,7 +478,7 @@ class Form_Subgrid extends RestApi {
 		set_default_formulas($estructura, $record);
 		$this->preRenderform('',$record);
 		
-		$form = FormManager::Run($controller,$record,"quick_create");
+		$form = FormManager::Run($controller,$record,$this,"quick_create");
 		//$form = generate_form_fields($estructura ,$record, false);
 		
 		
@@ -496,6 +496,44 @@ class Form_Subgrid extends RestApi {
 	}
 	
 	
+	public function execute_render_update($data){
+		//echo "execute_render_update";
+		//obtenemos el controller name
+		$view_id = $data["view"];
+		$obj = EntityManager::GetVista($view_id);
+		$metadata = EntityManager::GetEntityById($obj['id_entity']);
+		$controller = $metadata['entity'];
+		$this->loadPlugins($controller);
+		
+		$list = $data['list'];
+		//var_dump($list);
+		$record = array();
+
+		if (count($list)==1){
+			$first_id = $list[0];
+			$record = dbgetbyid($controller, $first_id);
+		}
+		
+		//set_default_formulas($estructura, $record);
+		//$this->preRenderform($record['id'],$record);
+		
+		$form = FormManager::Run($controller,$record, $this, "quick_edit");
+		//$form = generate_form_fields($estructura ,$record, false);
+		
+		
+		$html = '<form id="modal-form-data" action="'.get_URL_BASE().'/forms/subgrid.php" method="post" enctype="multipart/form-data">
+ 
+			<div id="modal-form-insert">'.$form.'</div>
+			
+			</form>
+			<div class="modal-buttons" > 
+			<button class="btn-confirm-accept" id="acceptButton" >Aceptar</button>
+			<button class="btn-confirm-cancel" id="closeButton"  onclick="javascript:ocultarFormulario();">Cerrar</button> 			 
+			</div>';
+		
+		echo $html;
+	}
+
 	public function execute_insert($data){
 		
 		//solo afecta al insert, porque pueden mezclarse variables del insert y el select
@@ -564,6 +602,56 @@ class Form_Subgrid extends RestApi {
 		
 		//evento after insert
 		$this->postInsert($id_generado, $record);
+
+	}
+
+	public function execute_update($data){
+		
+
+		//solo afecta al insert, porque pueden mezclarse variables del insert y el select
+		$op_data = json_decode($data["op_data"],true); 
+		$elements = $op_data["list"];
+		
+		$view_id = $op_data["view"];
+		
+		$obj = EntityManager::GetVista($view_id);
+		$metadata = EntityManager::GetEntityById($obj['id_entity']);
+		$controller = $metadata['entity'];
+		
+		$this->loadPlugins($controller);
+						
+		$record = array();
+		
+		//recuperamos la estructura a tratar
+		$estructura = EntityManager::GetEstructura($controller);
+		foreach($estructura  as $campo){
+			if ( $campo["dbcolumn"] != $key_field  
+				&& isset($data[$campo["dbcolumn"]]) 
+				&& $data[$campo["dbcolumn"]] != "")
+			{
+				
+				if ($campo["type"] == "secret"){
+					$record[$campo["dbcolumn"]] = cypherMessageAES($data[$campo["dbcolumn"]],__CYPHERKEY__);
+				}else{
+					 $record[$campo["dbcolumn"]] = mask($data[$campo["dbcolumn"]], $campo["type"]);
+				}
+			
+			}
+		}
+			
+		
+		
+		//no tratamos update de ficheros
+		foreach ($elements as $item){
+			$record["id"] = $item;
+			//insertamos en BBDD
+			dbupdate($controller, $record );
+			
+			//evento after update
+			$this->postUpdate($item, $record);
+		}
+
+		
 
 	}
 	

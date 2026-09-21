@@ -5,14 +5,14 @@
 	box-sizing: border-box;
 	
 }
-
+/*
 .edit-btn {
 	height: 15px;
 	width: 15px;
 	margin-left: 5px;
 	content: url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIC0wLjUgMjEgMjEiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgZmlsbD0iIzAwMDAwMCI+PGcgaWQ9IlNWR1JlcG9fYmdDYXJyaWVyIiBzdHJva2Utd2lkdGg9IjAiPjwvZz48ZyBpZD0iU1ZHUmVwb190cmFjZXJDYXJyaWVyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjwvZz48ZyBpZD0iU1ZHUmVwb19pY29uQ2FycmllciI+IDx0aXRsZT5lZGl0IFsjMTQ3OV08L3RpdGxlPiA8ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz4gPGRlZnM+IDwvZGVmcz4gPGcgaWQ9IlBhZ2UtMSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+IDxnIGlkPSJEcmliYmJsZS1MaWdodC1QcmV2aWV3IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtOTkuMDAwMDAwLCAtNDAwLjAwMDAwMCkiIGZpbGw9IiMwMDAwMDAiPiA8ZyBpZD0iaWNvbnMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDU2LjAwMDAwMCwgMTYwLjAwMDAwMCkiPiA8cGF0aCBkPSJNNjEuOSwyNTguMDEwNjQzIEw0NS4xLDI1OC4wMTA2NDMgTDQ1LjEsMjQyLjA5NTc4OCBMNTMuNSwyNDIuMDk1Nzg4IEw1My41LDI0MC4xMDY0MzEgTDQzLDI0MC4xMDY0MzEgTDQzLDI2MCBMNjQsMjYwIEw2NCwyNTAuMDUzMjE1IEw2MS45LDI1MC4wNTMyMTUgTDYxLjksMjU4LjAxMDY0MyBaIE00OS4zLDI0OS45NDk3NjkgTDU5LjYzMDk1LDI0MCBMNjQsMjQ0LjExNDk4NSBMNTMuMzM0MSwyNTQuMDMxOTI5IEw0OS4zLDI1NC4wMzE5MjkgTDQ5LjMsMjQ5Ljk0OTc2OSBaIiBpZD0iZWRpdC1bIzE0NzldIj4gPC9wYXRoPiA8L2c+IDwvZz4gPC9nPiA8L2c+PC9zdmc+");
 }
-
+*/
 
 html,
 body {
@@ -103,6 +103,7 @@ body {
 	padding: 8px;
 	height: 100%;
 	overflow-y: hidden;
+
 }
 
 
@@ -116,6 +117,8 @@ body {
 	padding: 8px;
 	height: 100%;
 	overflow-y: hidden;
+	transition: all 0.5s ease;
+	
 }
 
 
@@ -240,10 +243,11 @@ body {
 }
 
 .sidebar .has-submenu a.menu-area {
-	/*padding-left: 20px;*/
+	/*padding: 8px;*/
 
 	font-size: 15px;
 	font-weight: 500;
+	
 
 }
 
@@ -410,6 +414,8 @@ div.datagrid-lookup {
 	width: 120px !important;
 }
 
+
+
 .panel_item_list {
 	display: flex;
 	align-items: stretch;
@@ -488,7 +494,7 @@ ESTILOS PARA NUEVOS FORMULARIOS MODALES
   .modal-header {
     background: var(--color-cabecera);
     color: var(--color-cabecera-texto);
-    padding: 10px 16px;
+    padding: 4px 16px;
     font-size: 16px;
     display: flex;
 	border-radius: 10px 10px 0 0;
@@ -677,14 +683,6 @@ h1 {
 	display: block;
 }
 
-.message {
-	background-color: var(--mensaje-ok);
-	border: solid 1px #00cc00;
-	padding: 8px;
-	border-radius: 8px;
-
-	animation: autohide 5s forwards;
-}
 
 
 @keyframes autohide {
@@ -754,38 +752,19 @@ h1 {
 }
 
 /*
-@media (max-width: 1024px) {
-
-	/*menu lateral pero presentacion de formulario mobil* /
-	.sidebar {
-		width: 150px;
-		min-width: 150px;
-
-		overflow: visible;
-	}
 
 
+/*en movil, ancho lateral se verá como en PC*/
+@media screen and (max-width: 1024px) and (orientation: landscape) {
 
-	.panel_item {
-		width: 45%;
-	}
-
-
-	.formarea {
-		display: block;
-
+	.header {
+		display: none ;
 
 	}
-
-	.formarea .formsection {
-		padding: 10px;
-		display: block;
-		width: 100% !important;
-	}
-
 
 }
-*/
+
+
 /* Estilos responsivos */
 /*en tablet se verá como en PC*/
 @media (max-width: 768px) {
@@ -819,6 +798,7 @@ h1 {
 		font-size: 14px;
 		height: min-content;
 		max-height: 50%;
+		transition: 0.5s ease;
 	}
 
 	.sidebar .mobile-menu-list {
@@ -855,6 +835,7 @@ h1 {
 		overflow-y: auto;
 		scrollbar-width: thin;
 		height: 100%;
+		transition: all 0.5s ease;
 	}
 
 
@@ -943,6 +924,7 @@ h1 {
 	text-overflow: ellipsis;
 	/* Muestra los puntos suspensivos */
 	cursor: default;
+	border-bottom: 1px solid #ddd;
 }
 
 /* Resaltar fila al pasar el rat�n por encima */
@@ -1066,14 +1048,30 @@ select {
 	margin-bottom: 10px;
 }
 
+.message {
+	
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    color: #0f5132;
+    background-color: #d1e7dd;
+    border: 1px solid #badbcc;
+    border-radius: 0.375rem;
+    font-size: 0.95rem;
+
+	animation: autohide 5s forwards;
+}
+
 .login-error,
 .message-error {
-	padding: 20px;
-	border: solid 1px;
-	border-color: #c62828;
-	background-color: #f8d7da;
-	border-radius: 10px;
 
+	display: block;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    color: #842029;
+    background-color: #f8d7da;
+    border: 1px solid #f5c2c7;
+    border-radius: 0.375rem;
+    font-size: 0.95rem;
 }
 
 .modal-content {
@@ -1159,6 +1157,11 @@ select {
 	background-color: #fafafa;;
 }
 
+.campo-error {
+	border: 2px solid red !important;
+	background-color: #ffe6e6 !important;
+}
+
 .form .image_form {
 	height: 200px;
 	width: auto;
@@ -1236,10 +1239,7 @@ select {
 	cursor: pointer;
 }
 
-.campo-error {
-	border: 2px solid red;
-	background-color: #ffe6e6;
-}
+
 
 .rpt-dropdown {
 	position: relative;
@@ -1287,4 +1287,159 @@ select {
 
 	min-height: 400px;
 	border: 1px solid #ccc;
+}
+
+
+/*
+estilos por defecto para tablas
+*/
+table {
+    width: 100%;
+    border-collapse: collapse;
+    
+    font-size: 0.95rem;
+}
+
+table th,
+table td {
+    padding: 5px 5px;
+    text-align: left;
+ 	/*border-bottom: 1px solid #ddd;    */
+}
+
+table th {
+    font-weight: 600;
+    /*background: #f7f7f7;*/
+}
+table.debug {
+	background-color:#333;
+	color: #ffffff;
+}
+
+
+/*
+MODERN CHECKBOX
+*/
+/* Checkbox moderno */
+input[type="checkbox"].modern-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+
+    width: 18px;
+    height: 18px;
+	padding:2px;
+    border: 2px solid #adb5bd;
+    border-radius: 50%;
+    background: #fff;
+
+    cursor: pointer;
+    vertical-align: middle;
+
+    transition: all 0.3s ease;
+}
+
+/* Cuando está marcado */
+input[type="checkbox"].modern-checkbox:checked {
+    background: var(--color-cabecera);
+    border-color: var(--color-cabecera);
+}
+
+/* El check */
+input[type="checkbox"].modern-checkbox:checked::after {
+    content: "✓";
+    display: block;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    line-height: 14px;
+    text-align: center;
+}
+
+/* Al pasar el ratón */
+input[type="checkbox"].modern-checkbox:hover {
+    border-color: var(--color-cabecera);
+}
+
+/* Cuando recibe foco */
+input[type="checkbox"].modern-checkbox:focus-visible {
+    outline: 3px solid rgba(13, 110, 253, 0.25);
+    outline-offset: 2px;
+}
+
+/* Contenedor principal (un poco más ancho para el texto) */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 75px;
+  height: 30px;
+}
+
+/* Ocultar checkbox nativo */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* El fondo del switch */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: 0.3s;
+  border-radius: 15px;
+}
+
+/* --- EL TEXTO (ON / OFF) --- */
+.slider::before {
+  position: absolute;
+  content: "NO"; /* Texto por defecto */
+  color: white;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  /* Posicionamiento a la derecha cuando está apagado */
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: 0.3s;
+}
+
+/* --- EL CÍRCULO DESLIZANTE --- */
+.slider::after {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* --- ESTADOS CUANDO ESTÁ MARCADO (CHECKED) --- */
+
+/* Cambia el color de fondo a verde */
+.switch input:checked + .slider {
+  background-color: var(--color-cabecera);
+}
+
+/* Cambia el texto a "ON" y lo mueve a la izquierda */
+.switch input:checked + .slider::before {
+  content: "SI";
+  right: auto;
+  left: 12px;
+}
+
+/* Mueve el círculo hacia la derecha */
+.switch input:checked + .slider::after {
+  transform: translateX(41px); /* Ajustado al nuevo ancho */
+}
+
+/* Enfoque para teclado (Accesibilidad) */
+.switch input:focus + .slider {
+  box-shadow: 0 0 4px var(--bordes-visuales);
 }

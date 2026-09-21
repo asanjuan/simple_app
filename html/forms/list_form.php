@@ -7,6 +7,9 @@ clear_calling_stack();
 //push_calling_url();
 
 $entidad = $_GET['controller'];
+if (!isValidTableName($entidad) ){
+	die();
+}
 $metadata = EntityManager::GetEntity($entidad);
 $vistas = EntityManager::GetVistas($metadata['id']);
 $primera_vista = $vistas[0]["id"];

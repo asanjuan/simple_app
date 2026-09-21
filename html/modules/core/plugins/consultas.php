@@ -9,7 +9,7 @@ class consultas_plugin extends PluginInterface {
 	public function postInsert($item, $datos){ }
 	public function preDuplicate($item, &$datos){ }
 	public function postDuplicate($item, $new_item){ }
-	public function customContent($item){ 
+	public function customContent($item, $section){ 
 		$listado_html = "";
 		if ($this->datos != null){
 			$listado_html = generarTablaHTML($this->datos);
@@ -40,7 +40,7 @@ class consultas_plugin extends PluginInterface {
 				$this->showMessage("Consulta ejecutada");
 		
 			} catch (PDOException $e) {
-				$this->showMessage("Error en la consulta: " . $e->getMessage());
+				$this->showError("Error en la consulta: " . $e->getMessage());
 			}
 		}else if ($operation == "copy-to" ){
 			try{
@@ -59,7 +59,7 @@ class consultas_plugin extends PluginInterface {
 				dump($respuesta);
 		
 			} catch (PDOException $e) {
-				$this->showMessage("Error en la consulta: " . $e->getMessage());
+				$this->showError("Error en la consulta: " . $e->getMessage());
 			}
 		}
 	}

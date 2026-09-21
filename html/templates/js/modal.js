@@ -15,7 +15,8 @@ document.addEventListener("keydown", function(e) {
 
 
 function reloadPage(){
-	window.location.reload();
+	//window.location.reload();
+	window.location.replace(window.location.pathname + window.location.search);
 }
 
 
@@ -181,7 +182,7 @@ nuevo formulario modal
  * @param {number} pct_alto - Porcentaje de alto del modal.
  * @param {number} pct_ancho - Porcentaje de ancho del modal.
  */
-function abrirModal(url, titulo = 'Ventana', pct_alto = 80, pct_ancho = 80) {
+function abrirModal(url, titulo = 'Ventana', pct_alto = 95, pct_ancho = 95) {
 	let modalZIndex = 1000;
 	const overlay = document.createElement('div');
 	overlay.className = 'modal-overlay';

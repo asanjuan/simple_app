@@ -9,9 +9,9 @@ class app_modules_plugin extends PluginInterface {
 	public function postInsert($item, $datos){ }
 	public function preDuplicate($item, &$datos){ }
 	public function postDuplicate($item, $new_item){ }
-	public function customContent($item){ 
+	public function customContent($item, $section){ 
 		
-		return print_grid('1499C6B48BF03EE27798C87A0DB98954' , "id_module", $item,"");
+	
 	}
 	public function setDefaultValues(&$datos){}
 	public function preRenderform($item, &$datos){ 
@@ -25,7 +25,7 @@ class app_modules_plugin extends PluginInterface {
 				
 		
 			} catch (PDOException $e) {
-				$this->showMessage("Error en la consulta: " . $e->getMessage());
+				$this->showError("Error en la consulta: " . $e->getMessage());
 			}
 		}
 	}

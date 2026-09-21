@@ -96,7 +96,7 @@ class app_entities_plugin extends PluginInterface {
 	    
 	}
 	
-	public function customContent($item){ 
+	public function customContent($item, $section){ 
 
 	}
 	
@@ -124,7 +124,7 @@ class app_entities_plugin extends PluginInterface {
 				$this->showMessage("Tabla $tabla creada correctamente");
 				
 			} catch (PDOException $e) {
-				$this->showMessage("Error en la consulta: " . $e->getMessage());
+				$this->showError("Error en la consulta: " . $e->getMessage());
 			}
 		}else if ($operation == "create_cols" ){
 			
@@ -141,7 +141,7 @@ class app_entities_plugin extends PluginInterface {
 						query($sql);
 						
 					} catch (PDOException $e) {
-						//$this->showMessage("Error en la consulta: " . $e->getMessage());
+						//$this->showError("Error en la consulta: " . $e->getMessage());
 					}
 					
 				}
@@ -160,7 +160,7 @@ class app_entities_plugin extends PluginInterface {
 				$this->showMessage("Tabla $tabla borrada correctamente");
 				
 			} catch (PDOException $e) {
-				$this->showMessage("Error en la consulta: " . $e->getMessage());
+				$this->showError("Error en la consulta: " . $e->getMessage());
 			}
 		}else if ($operation == "load" ){
 			try{
@@ -195,7 +195,7 @@ class app_entities_plugin extends PluginInterface {
 				$this->showMessage("Columnas importadas");
 				
 			} catch (PDOException $e) {
-				$this->showMessage("Error en la consulta: " . $e->getMessage());
+				$this->showError("Error en la consulta: " . $e->getMessage());
 			}
 		}
 	}

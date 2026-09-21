@@ -10,7 +10,7 @@ class app_entities_plugin extends PluginInterface {
 	public function preDuplicate($item, &$datos){ }
 	public function postDuplicate($item, $new_item){ }
 	
-	public function customContent($item){ 
+	public function customContent($item, $section){ 
 
 	}
 	
@@ -38,7 +38,7 @@ class app_entities_plugin extends PluginInterface {
 				$this->showMessage("COLUMNA $table_name.$col_name CREADA correctamente");
 				
 			} catch (PDOException $e) {
-				$this->showMessage("Error en la consulta: " . $e->getMessage());
+				$this->showError("Error en la consulta: " . $e->getMessage());
 			}
 		}else if ($operation == "drop" ){
 			try{
@@ -54,7 +54,7 @@ class app_entities_plugin extends PluginInterface {
 				$this->showMessage("COLUMNA $table_name.$col_name BORRADA correctamente");
 				
 			} catch (PDOException $e) {
-				$this->showMessage("Error en la consulta: " . $e->getMessage());
+				$this->showError("Error en la consulta: " . $e->getMessage());
 			}
 		}else if ($operation == "alter"){
 			try{
@@ -74,7 +74,7 @@ class app_entities_plugin extends PluginInterface {
 				$this->showMessage("COLUMNA $table_name.$col_name Modificada correctamente");
 				
 			} catch (PDOException $e) {
-				$this->showMessage("Error en la consulta: " . $e->getMessage());
+				$this->showError("Error en la consulta: " . $e->getMessage());
 			}
 		}
 	}

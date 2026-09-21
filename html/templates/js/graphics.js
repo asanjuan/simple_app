@@ -41,13 +41,44 @@ document.addEventListener("DOMContentLoaded", function() {
     })
       .then(response => response.json())
       .then(objresponse => {
-        //console.log(objresponse);
-        
+        console.log(objresponse);
+        const paletaRetro = [
+            '#E07A5F', // Terracota
+            '#3D5A80', // Azul Índigo
+            '#F4F1DE', // Arena
+            '#81B29A', // Verde Salvia
+            '#F2CC8F', // Ocre / Trigo
+            '#76787A'  // Gris Pizarra
+        ];
+        const paletaCyberpunk = [
+            '#00F5FF', // Neón Cyan
+            '#FF007F', // Neón Magenta
+            '#39FF14', // Neón Verde
+            '#BA55D3', // Orquídea
+            '#FFAA00', // Mandarina
+            '#0066FF'  // Azul Eléctrico
+        ];
+        const paletaPastelSolida = [
+            '#8EC7EB', // Azul cielo
+            '#F3A3B9', // Rosa suave
+            '#A7DBBC', // Verde menta
+            '#FDD48E', // Melocotón
+            '#C5AFE2', // Lavanda
+            '#9EDECE'  // Turquesa claro
+        ];
+        const paletaCorporativa = [
+            '#36A2EB',
+            '#2ECC71',
+            '#FF6384',
+            '#FF9F40',
+            '#9966FF',
+            '#FFCD56'
+        ];
         let label_items = objresponse.data.map(row => row[objresponse.label_field]);
         let datasets = [];
         objresponse.data_field.forEach( item => {
             item = item.trim();
-            datasets.push( { data: objresponse.data.map(row => row[item]), label: item, hoverOffset:4 } );
+            datasets.push( { data: objresponse.data.map(row => row[item]), label: item, hoverOffset:4, backgroundColor: paletaCorporativa } );
         }
         );
 
@@ -65,6 +96,7 @@ document.addEventListener("DOMContentLoaded", function() {
             type: objresponse.type,
             data: graphic_data,
             options: {
+               indexAxis: objresponse.indexAxis,
                responsive: true,
                maintainAspectRatio: false,
                 plugins: {

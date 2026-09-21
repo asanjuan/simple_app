@@ -6,7 +6,6 @@ include_once 'dbconfig.php';
 $conn = get_DB();
 
 
-
 function get_DB(){
 	
 	global $db_servername, $db_username, $db_password, $dbname, $conn;
@@ -21,13 +20,6 @@ function get_DB(){
 		echo "Error en la conexi�n: " . $e->getMessage();
 	}
 		
-}
-
-function trace($sql){
-	echo "<pre>";
-	echo $sql ;
-	echo "</pre>";
-
 }
 
 //************************************************************************************************
@@ -99,14 +91,14 @@ function appendcondition($sql,$condition){
 }
 
 
+
 function appendOR($exp,$condition){
 	if ($exp != "")
 		return $exp . " OR " . $condition ;
 	else 
 		return $condition;
-	
-	
 }
+
 
 
 /*
@@ -161,8 +153,9 @@ function dbinsert($tabla, $datos, $verbatim = false){
 }
 
 function dbgetbyid($tabla,$id){
-	$sql = "Select * from ".$tabla." where id =" . quote($id);	
-	$datos = query1($sql); 
+	//$sql = "Select * from ".$tabla." where id = ?" . quote($id);	
+	$sql = "Select * from ".$tabla." where id = ?";
+	$datos = query1($sql, [ $id]); 
 	return $datos;
 }
 
@@ -219,6 +212,7 @@ UPSERT ES UNA FUNCIÓN MUY CÓMODA PARA TODOS LOS DESPLIEGUES
 function dbupsert($tabla, $record){
 	$new_id = null;
 	if (isset($record['id'])){
+		$new_id = $record['id'];
 		//upsert
 		if (dbexists($tabla,$record['id'])){
 			dbupdate($tabla, $record, "id");
@@ -387,7 +381,7 @@ function nextSequence($nombre, $year = 0, $id_empresa = ""){
 	return $formated_value;
 }
 
-
+/*
 function nextYearSequence($nombre,$year){
 	$sql = "select * from app_numeraciones where nombre ='$nombre' and anio=$year";
 	$data = query1($sql);
@@ -420,7 +414,7 @@ function nextYearSequence($nombre,$year){
 
 	return $formated_value;
 }
-
+*/
 /*
 CONVERSIONES DE JSON A SQL PARA LA API
 */

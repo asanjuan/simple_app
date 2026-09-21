@@ -279,9 +279,29 @@ var MyApp = (function () {
                     }
 
                 });
+            },
+            navigate: function(controller, id = "", modal = false){
+                let url = window.location.origin + "/?controller=" + controller;
+                if (id != ""){
+                    url += "&item=" + id;
+                }
+                if (modal === true){
+
+                    abrirModal(url+"&focusmode=true");
+                    
+                }else{
+                    let params = new URLSearchParams(window.location.search);
+                    let focusMode = params.get("focusmode") === "true";
+                    if (focusMode){
+                        window.location = url + "&focusmode=true";
+                    }else{
+                        window.location = url;
+                    }
+                    
+                }
+                
             }
         },
-
         /** Utilidades generales */
         utils: {
             log: function (message) {

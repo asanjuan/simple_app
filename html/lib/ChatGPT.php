@@ -1,23 +1,6 @@
 <?php
 
-/* Simple ChatGPT Class that enables both text and image prompt
-to use this class in another file just import it and call one of the 2 functions createTextRequest() or generateImage() with your prompt (or options)
 
-Code Example:
-
-include_once('ChatGPT.php'); // include class from folder
-$ai = new ChatGPT(); // initialize class object
-echo $ai->generateImage('a cat on a post lamp')['data'] ?? 'ERROR!'; // print the image URL or error text
-echo $ai->createTextRequest('what is the weather in Romania?')['data'] ?? 'ERROR!'; // print the text response or error text -->
-
-
-
-MODEL FAMILIES	API ENDPOINT
-Newer models (2023–)	gpt-4, gpt-3.5-turbo	https://api.openai.com/v1/chat/completions
-Updated base models (2023)	babbage-002, davinci-002	https://api.openai.com/v1/completions
-Legacy models (2020–2022)	text-davinci-003, text-davinci-002, davinci, curie, babbage, ada	https://api.openai.com/v1/completions
-You can experiment with GPTs in the playground. If you’re not sure which model to use, then use gpt-3.5-turbo or gpt-4.
-*/
 
 
 class ChatGPT

@@ -16,12 +16,23 @@ if ("serviceWorker" in navigator) {
 }
 
 
+const params = new URLSearchParams(window.location.search);
+const focusMode = params.get("focusmode") === "true";
+const custom_tabid = params.get("tabid");
+let tabId;
 
-// Identificador único de pestaña
-let tabId = sessionStorage.getItem("tab_id");
-if (!tabId) {
-    tabId = Math.random().toString(36).substr(2, 9);
-    sessionStorage.setItem("tab_id", tabId);
+if (focusMode) {
+    // Ventana de detalle / iframe
+    tabId = custom_tabid;
+
+} else {
+    // Pestaña principal del navegador
+    tabId = sessionStorage.getItem("tab_id");
+
+    if (!tabId) {
+        tabId = crypto.randomUUID();
+        sessionStorage.setItem("tab_id", tabId);
+    }
 }
 
 function getHistory() {
@@ -34,6 +45,7 @@ function setHistory(history) {
 
 // Guardar en el historial si es diferente de la última entrada
 function savePage(url) {
+    debugger;
     // No guardar si contiene "&new" o "?new"
     if (url.includes("&new") || url.includes("?new")) {
         //console.log("No se guarda en historial porque contiene &new:", url);
@@ -48,15 +60,16 @@ function savePage(url) {
 
 // Volver atrás
 function goBack() {
+    debugger;
     let history = getHistory();
     let currentUrl = window.location.pathname + window.location.search;
 
-    if (history.length === 0) {
+    if (history.length <= 1) {
         //alert("No hay historial en esta pestaña");
         return;
     }
 
-    if (history.length >= 1) {
+    if (history.length > 1) {
         if (history[history.length - 1] === currentUrl) 
             history.pop(); // quitar la actual
         let previous = history.pop(); // quitar y obtener la anterior

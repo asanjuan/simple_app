@@ -1,7 +1,7 @@
-function  addSortingTable(id_tabla){
+function  addSortingTable(tabla){
 	
 	// Obt�n la tabla y las filas de datos
-	var tabla = document.getElementById(id_tabla);
+	//var tabla = document.getElementById(id_tabla);
 	var filas = tabla.querySelectorAll("tbody tr");
 
 	// Agrega un evento click a cada cabecera
@@ -66,7 +66,7 @@ function ordenarTabla(cabecera, columna,tabla, filas) {
 function seleccionarTodasLasFilas(id_tabla, checkbox) {
 	
 	var tabla = document.getElementById(id_tabla);
-	
+	/*
 	// Obtener todas las casillas de verificaci�n de las filas
 	var checkboxes = tabla.querySelectorAll('input[type=checkbox]');
 
@@ -74,6 +74,17 @@ function seleccionarTodasLasFilas(id_tabla, checkbox) {
 	for (var i = 0; i < checkboxes.length; i++) {
 		checkboxes[i].checked = checkbox.checked;
 	}
+		*/
+	var select = tabla.querySelectorAll("tr.grid_row");
+	select.forEach(function (item) {
+		let chk = item.querySelector("input[type=checkbox]");
+		chk.checked =  checkbox.checked;
+		if (chk.checked) {
+			item.classList.add('selected');
+		}else{
+			item.classList.remove('selected');
+		}
+	});
 }
 
 

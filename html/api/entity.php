@@ -1,16 +1,6 @@
 <?php
 
-
-
-require_once 'rest_api.php';
-include_once '../config.php';
-include_once '../utilities.php';
-include_once '../database.php';
-include_once '../classes/entity_manager.php';
-include_once '../classes/loginmanager.php';
-include_once '../classes/utility_traits.php';
-include_once '../classes/plugin_manager.php';
-include_once '../classes/security_manager.php';
+require dirname(__DIR__).'/autoload.php';
 
 
 
@@ -20,7 +10,9 @@ class EntityApi extends RestApi {
 
         $controller = $_GET['controller'];
         $messages = [];
-        
+        if (!isValidTableName($controller) ){
+            $this->returnError(400,"Bad Request");
+        }
         foreach ($data as $record){
             try{
 
@@ -57,7 +49,6 @@ class EntityApi extends RestApi {
            
             $sql = jsonToSql($queryJson);
             try{
-                
                 echo json_encode(query($sql));
     
             }catch(PDOException $e){
@@ -69,7 +60,10 @@ class EntityApi extends RestApi {
 
             $controller = $_GET['controller'];
             $item = $_GET['item'];
-    
+            if (!isValidTableName($controller) ){
+                $this->return_error(400,"Bad Request");
+            }
+
             $sql = "select * from $controller";
             if ($item != ""){
                 
@@ -86,7 +80,6 @@ class EntityApi extends RestApi {
 
         }
 
-        
 	}
 
 	protected function ExecuteDelete($data){

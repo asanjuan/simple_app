@@ -1,16 +1,5 @@
 <?php 
-
-
-require_once '../api/rest_api.php';
-include_once '../config.php';
-include_once '../utilities.php';
-include_once '../database.php';
-include_once '../classes/entity_manager.php';
-include_once '../classes/loginmanager.php';
-include_once '../classes/utility_traits.php';
-include_once '../classes/security_manager.php';
-
-
+require dirname(__DIR__).'/autoload.php';
 
 
 class Form_lookup extends RestApi {

@@ -90,7 +90,7 @@ class my_new_plugin extends PluginInterface {
 	public function preDuplicate($item, &$datos){ }
 	public function postDuplicate($item, $new_item){ }
 	
-	public function customContent($item){ 	}
+	public function customContent($item, $section){ 	}
 	
 	public function setDefaultValues(&$datos){  }
 	

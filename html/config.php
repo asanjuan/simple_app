@@ -1,5 +1,11 @@
 <?php
 
+$cypherKey = $_ENV['CYPHERKEY'] ?? 'key_sample';
+define('__CYPHERKEY__', $cypherKey);
+
+define( '__DEBUGSQL__', false);
+define( '__DEBUGREQUEST__', false);
+
 
 try {
     session_start();
@@ -19,13 +25,12 @@ function exception_error_handler($errno, $errstr, $errfile, $errline ) {
 		echo ($errstr);
         return false;
     }
+	
     throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
 }
 
 set_error_handler("exception_error_handler");
 
-define( '__DEBUGSQL__', false);
-define( '__DEBUGREQUEST__', false);
 
 function print_debug_request(){
 	if ( __DEBUGREQUEST__ ) {
@@ -36,12 +41,4 @@ function print_debug_request(){
 	}	
 }
 
-function dump($var){
-	echo "<pre>";
-	var_dump($var);
-	echo "</pre>";
-}
 
-
-$cypherKey = $_ENV['CYPHERKEY'] ?? 'key_sample';
-define('__CYPHERKEY__', $cypherKey);

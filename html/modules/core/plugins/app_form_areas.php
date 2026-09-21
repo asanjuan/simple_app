@@ -11,7 +11,7 @@ class my_new_plugin extends PluginInterface {
 	public function preDuplicate($item, &$datos){ }
 	public function postDuplicate($item, $new_item){ }
 	
-	public function customContent($item){ 
+	public function customContent($item, $section){ 
 		$html = "<h3>Secciones</h3>";
 		$html .= print_grid('D2E616EC2D515DBC1391A839BDD6BE0A', "id_area", $item,"");
 		return $html;

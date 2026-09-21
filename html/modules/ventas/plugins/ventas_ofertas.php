@@ -1,7 +1,6 @@
 <?php 
 
 
-
 PluginManager::RegisterPlugin(new my_new_plugin());	    
 
 class my_new_plugin extends PluginInterface {
@@ -14,7 +13,7 @@ class my_new_plugin extends PluginInterface {
 	}
 	public function postInsert($item, $datos){ 
 	    $datos['codigo'] = nextSequence("ventas_ofertas",date("Y"),$datos['id_empresa']);
-	    $datos['estado'] =0; //borrador 
+	    $datos['estado'] = 0; //borrador 
 	    
 	    $hoy = new DateTime();
 	    $datos['fecha_oferta'] = $hoy->format('Y-m-d');
@@ -30,7 +29,7 @@ class my_new_plugin extends PluginInterface {
 	}
 	public function postDuplicate($item, $new_item){ 
 	    
-	    //duplicamos Columnas
+	    //duplicamos lineas de oferta
 		$data = query("SELECT * FROM ventas_ofertas_lineas where id_oferta=".quote($item));
 		foreach ($data as $col) {
 		    // code...
@@ -38,33 +37,42 @@ class my_new_plugin extends PluginInterface {
 		    $col['id']='';
 		    dbinsert('ventas_ofertas_lineas', $col);
 		}
+		
+		//duplicamos lineas de hitos
+		$data = query("SELECT * FROM ventas_hito_oferta where id_oferta=".quote($item));
+		foreach ($data as $col) {
+		    // code...
+		    $col['id_oferta'] = $new_item;
+		    $col['id']='';
+		    dbinsert('ventas_hito_oferta', $col);
+		}
 	    
 	}
 	
 	public function postTransition($item, $trans){
 	    
 	    $lib = EntityManager::GetLibraryFile("ventas_lib.php");
-
+        
         if (!empty($lib)){
-            include_once('../'.$lib[0]);
+            include_once(APP_ROOT.'/'.$lib[0]);
             
         }
         
-	    dump ('class exists al ejecutar plugin :'.class_exists('BL_Ventas'));
-	    try{
+	   try{
 	        
     	    if ($trans['nombre']=="Confirmar Pedido"){
-    	        
+    	       
     	        BL_Ventas::Confirmar_Oferta($item);
     	        
     	    }
 	    
 	    }catch(Exception $err){
-	        echo json_encode($err);
+	        SystemLog::error("error transition",json_encode($err));
+	        
 	    }
 	    
 	}
-	public function customContent($item){ 
+	public function customContent($item, $section){ 
 
 	}
 	

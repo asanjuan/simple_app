@@ -1,14 +1,5 @@
 <?php 
-
-
-require_once '../api/rest_api.php';
-include_once '../config.php';
-include_once '../utilities.php';
-include_once '../database.php';
-include_once '../classes/entity_manager.php';
-include_once '../classes/loginmanager.php';
-include_once '../classes/utility_traits.php';
-
+require dirname(__DIR__).'/autoload.php';
 
 
 class GraphicData extends RestApi {
@@ -60,7 +51,15 @@ var filtro = {
 		$datos = query($sql);
 		$result["label_field"]=  $obj["label_field"];
 		$result["data_field"]= explode(",",$obj["data_field"]);
-		$result["type"] = $obj["tipo"];
+		$result["indexAxis"] ="x";
+		if ($obj["tipo"] == "bar-horizontal"){
+			$result["type"] ="bar";
+			$result["indexAxis"] ="y";
+		}else {
+			$result["type"] = $obj["tipo"];
+
+		}
+		
 		$result["title"] = $obj["name"];
 		$result["data"] = $datos;
 

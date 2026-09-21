@@ -21,7 +21,7 @@ class my_new_plugin extends PluginInterface {
 	    
 	}
 	
-	public function customContent($item){ 	}
+	public function customContent($item, $section){ 	}
 	
 	public function setDefaultValues(&$datos){  }
 	

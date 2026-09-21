@@ -19,7 +19,7 @@ class my_new_plugin extends PluginInterface {
 	        $this->showMessage("Contraseña cambiada correctamente");
 	        
 	    }else {
-	        $this->showMessage("Faltan datos o las contraseñas no coinciden");
+	        $this->showError("Faltan datos o las contraseñas no coinciden");
 	    }
 		
 	}

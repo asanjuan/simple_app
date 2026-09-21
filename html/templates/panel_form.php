@@ -6,7 +6,7 @@
 <?php
 foreach ($this->messages as $msg ){
 	
-	echo '<div class="message"> ' . t($msg) . '</div>';
+	echo '<div class="message"> ' . ($msg) . '</div>';
 	
 }
  ?>

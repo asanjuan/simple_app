@@ -2,13 +2,13 @@
 <html>
 <head>
 	<link rel="manifest" href="manifest.json" />
-	<link rel="icon" type="image/png" href="/app_icon_32.png" />
+	<link rel="icon" type="image/png" href="/app_icons/app_icon_32.png" />
 	<meta name="theme-color" content="#2c3e50">
 	<title><?php echo print_title_name(); ?></title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="templates/css/colors.php" />	
-	<link rel="stylesheet" href="templates/css/style.css" />	
+	<link rel="stylesheet" href="templates/css/style.css?ver=<?php echo time(); ?>" />	
 	<script  src="templates/js/myapplib.js"></script>
 	<!-- Incluye Chart.js desde el CDN -->
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -49,7 +49,7 @@
 		<div class="container-cols">
 			<?php if (!(isset($_GET['focusmode']) && $_GET['focusmode']=="true")) { ?>
 	
-			<div class="sidebar hidden">
+			<div class="sidebar">
 				<div class="mobile-menu"> 
 					<i class="fa-solid fa-bars"></i> <span> Men&uacute; </span> 
 				</div>
@@ -121,20 +121,14 @@
 					</div>
 				</div>
 
-
 				<?php echo print_main_form(); ?>
 
 
-				<?php echo print_debug_request(); ?>
+				
 			</div>
 
 		</div>
 	</div>
-
-	<!--div class="header">
-		<span class="app-title"><?php echo print_app_name(); ?></span>
-	</div-->
-	
 
 	
 </div>

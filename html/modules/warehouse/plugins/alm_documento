@@ -1,0 +1,98 @@
+<?php 
+
+PluginManager::RegisterPlugin(new my_new_plugin());
+
+class my_new_plugin extends PluginInterface {
+	
+	protected $data; //use it at will between related events
+	
+	public function postUpdate($item, $datos){ }
+	public function postInsert($item, $datos){ 
+	    $r = [
+	        'id'=> $item, 
+	        'codigo' => nextSequence("alm_documentos") 
+	        ];
+	    
+	    dbupdate("alm_documentos",  $r);
+	    
+	}
+	public function preDuplicate($item, &$datos){ }
+	public function postDuplicate($item, $new_item){ }
+	
+	public function customContent($item, $section){ 	}
+	
+	public function setDefaultValues(&$datos){  }
+	
+	public function preRenderform($item, &$datos){
+
+	}
+	public function onCustomButton($operation, $item, $datos){
+	    
+		
+	}
+	
+	public function postTransition($item, $trans){
+	    
+	    try{
+	        
+    	    if ($trans['nombre']=="Procesar"){
+ 
+                $sql = "select mov.id_producto, doc.id_almacen, sum(mov.cantidad) as stock, max(tipo_movimiento) as tipo
+                from alm_movimientos mov inner join alm_documentos doc on mov.id_documento = doc.id
+                where doc.id = ?
+                group by mov.id_producto, doc.id_almacen";
+                
+                $filas = query($sql, [$item]);
+        	    
+        	    SystemLog::info("filas", print_r( $filas, true));
+        	    
+        	    foreach ($filas as $fila){
+        	        //encontrar el registro de stock
+        	        $sql2 = "select id, id_producto, id_almacen, stock from alm_stock where id_producto = ? and id_almacen = ?";
+        	        $stock = query1($sql2, [ $fila["id_producto"] , $fila["id_almacen"] ]);
+        	        //dump($stock);
+        	        if ( !$stock ){
+        	            
+        	            $stock = [
+        	                "codigo" => nextSequence("alm_stock"),
+        	                "id_producto" => $fila["id_producto"] ,
+        	                "id_almacen" => $fila["id_almacen"] ,
+        	                "stock" => 0
+        	                ];
+        	        }
+        	        if ($fila["tipo"]=="equal"){
+        	            $stock["stock"] = $fila["stock"];
+        	        }else if ($fila["tipo"]=="input"){
+        	            $stock["stock"] += $fila["stock"];
+        	        }else if ($fila["tipo"]=="output"){
+        	            $stock["stock"] -= $fila["stock"];
+        	            
+        	        }
+        	        
+        	        
+        	        $id_stock = dbupsert("alm_stock", $stock);
+        	        
+        	        $sql_update = "update alm_movimientos set id_stock = ".quote($id_stock);
+        	        $sql_update .= " where id_documento = ". quote($item);
+        	        $sql_update .= " and id_producto = " . quote( $fila["id_producto"]);
+        	        
+        	        
+        	        query($sql_update);
+        	        
+        	    }
+    	       
+    	        
+    	    }
+	    
+	    }catch(Exception $err){
+	        SystemLog::error( "transition", json_encode($err));
+	        echo json_encode($err);
+	    }
+	    
+	}
+	public function postUploadFile($file){ $this->showMessage("postUploadFile");}
+	
+	public function preDelete($item){ }
+	public function postDelete($item){ }
+
+}

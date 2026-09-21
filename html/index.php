@@ -1,24 +1,32 @@
 <?php
+include 'autoload.php';
 
+/*
+include_once 'classes/debug_manager.php';
 include_once 'config.php';
 include_once 'utilities.php';
+
 include_once 'database.php';
+
+include_once 'classes/log_manager.php';
 require_once 'classes/loginmanager.php';
 include_once 'classes/entity_manager.php';
 include_once 'classes/form_manager.php';
 include_once 'classes/security_manager.php';
 include_once 'classes/report_manager.php';
 include_once 'classes/deployment_controller.php';
+*/
 
 login_test();
 check_URL_BASE();
-
+print_debug_request();
 
 //obtenemos el controlador por defecto para cargar la página principal
 $default_controller = get_config('DEFAULT_CONTROLLER');	
 if (empty($_GET)) {
 	$_GET['controller'] = $default_controller; //hack para que funcione el menu
 }
+
 
 
 //es necesario estar en el ámbito de una empresa
@@ -174,6 +182,11 @@ function print_main_form(){
 		$_GET['controller'] = $default_controller; //hack para que funcione el menu
 	}
 
+	
+	if (!isValidTableName($controller) ){
+		include 'templates/denied.php';
+		die();
+	}
 	
 	$metadata = EntityManager::GetEntity($controller);
 	

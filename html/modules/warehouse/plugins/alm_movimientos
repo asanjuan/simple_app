@@ -1,0 +1,37 @@
+<?php 
+
+PluginManager::RegisterPlugin(new my_new_plugin());
+
+class my_new_plugin extends PluginInterface {
+	
+	protected $data; //use it at will between related events
+	
+	public function postUpdate($item, $datos){ }
+	public function postInsert($item, $datos){ }
+	public function preDuplicate($item, &$datos){ }
+	public function postDuplicate($item, $new_item){ }
+	
+	public function customContent($item, $section){ 	}
+	
+	public function setDefaultValues(&$datos){  }
+	
+	public function preRenderform($item, &$datos){ 
+		//número de orden en el alta
+	    if ($item == "" || $item <0){
+
+	        
+	    }else { //establece el estado del registro como bloqueado o activo en función de la cabecera
+	        $id_documento = $datos['id_documento'];
+	        $parent = dbgetbyid("alm_documentos",$id_documento);
+	        $datos['status'] = $parent['status'];
+	    }
+	}
+	public function onCustomButton($operation, $item, $datos){ 
+		
+	}
+	public function postUploadFile($file){ $this->showMessage("postUploadFile");}
+	
+	public function preDelete($item){ }
+	public function postDelete($item){ }
+
+}

@@ -11,7 +11,7 @@ class my_new_plugin extends PluginInterface {
 	public function preDuplicate($item, &$datos){ }
 	public function postDuplicate($item, $new_item){ }
 	
-	public function customContent($item){ 	}
+	public function customContent($item, $section){ 	}
 	
 	public function setDefaultValues(&$datos){  }
 	
@@ -38,7 +38,7 @@ class my_new_plugin extends PluginInterface {
                 }
                 $this->showMessage("Imagen creada. Listo para transportar");
             } catch (PDOException $e) {
-                $this->showMessage("Error: " . $e->getMessage());
+                $this->showError("Error: " . $e->getMessage());
             }
 	        
 	    }else if ($operation == "deploy"){
@@ -69,14 +69,14 @@ class my_new_plugin extends PluginInterface {
                         $b64 = $prov->apply($objeto['json_data']);
                         
                     }else {
-                        $this->showMessage( $objeto['entity'] . " no válido");
+                        $this->showError( $objeto['entity'] . " no válido");
                     }
 
                 }
                  $this->showMessage("Despliegue completado");
                  
             } catch (PDOException $e) {
-                $this->showMessage("Error: " . $e->getMessage());
+                $this->showError("Error: " . $e->getMessage());
             }
 	    }
 	}

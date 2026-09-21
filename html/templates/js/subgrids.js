@@ -104,6 +104,14 @@ function agregarListenersPaginacion(grid) {
 		});
 	});
 
+	var edit_btns = grid.querySelectorAll("a.btn-edit");
+	edit_btns.forEach(function (link) {
+		link.addEventListener("click", function (event) {
+			event.preventDefault(); // Evitar que el enlace cambie la página
+			renderizarEdit(grid);
+		});
+	});
+
 	// Agregar event listeners para los enlaces de DUPLICADO de elementos (si existen)
 	var linksPaginacion = grid.querySelectorAll("a.btn-duplicate");
 	linksPaginacion.forEach(function (link) {
@@ -191,14 +199,49 @@ function agregarListenersPaginacion(grid) {
 		});
 	});
 
+	//eventos de click de las filas
+	var select = grid.querySelectorAll("tr.grid_row");
+	select.forEach(function (item) {
+		let chkdef = item.querySelector("input[type=checkbox]");
+		chkdef.addEventListener("click", function (event) {
+			event.stopPropagation();
+		});
+		let liksdefault = item.querySelector("a");
+		liksdefault.addEventListener("click", function (event) {
+			event.stopPropagation();
+		});
+				
+		let lastTap = 0;
+		item.addEventListener("click", function (event) {
+			event.preventDefault();
+
+			let chk = item.querySelector("input[type=checkbox]");
+			if (event.ctrlKey) {
+				MyApp.ui.navigate(item.dataset.controller,item.dataset.id, true);
+			}else{
+				let actual = chk.checked  ;
+				let allchecks = grid.querySelectorAll("input[type=checkbox]");
+				allchecks.forEach( function (aux){
+					aux.checked = false;
+				});
+				let allrows = grid.querySelectorAll("tr.grid_row");
+				allrows.forEach( function (aux){
+					aux.classList.remove('selected');
+				});
+				chk.checked = !actual;
+				if (chk.checked) {
+					item.classList.add('selected');
+				}else{
+					item.classList.remove('selected');
+				}
+			}
+
+		});
+		
+		
+	});
+
 	var campotexto = grid.querySelector("input[type=text]");
-	/*
-	campotexto.addEventListener("change", function(event) {
-		event.preventDefault(); // Evitar que el enlace cambie la página
-		//una búsqueda por defecto saca la primera página
-		cargarPaginaSubgrid(grid,1);
-	  });
-	*/
 	campotexto.addEventListener("keydown", function (event) {
 		if (event.key === "Enter") {
 			event.preventDefault(); // Evita que el formulario se envíe
@@ -209,7 +252,8 @@ function agregarListenersPaginacion(grid) {
 	// Agregar event listeners para botón de exportación
 	var tabla = grid.querySelector("table");
 	if (tabla) {
-		addSortingTable(tabla.id);
+		
+		addSortingTable(tabla);
 	}
 
 }
@@ -261,6 +305,7 @@ function cargarPaginaSubgrid(grid, page) {
 			//agregar ordenación
 
 			// Agregar event listeners para la paginación (opcional)
+			
 			agregarListenersPaginacion(grid);
 			sendEvent(grid, "OnRefresh");
 		})
@@ -475,6 +520,10 @@ async function duplicarRegistros(grid) {
 }
 
 
+//editar registros 
+
+
+
 //UP AND DOWN 
 
 function UpRegistros(grid) {
@@ -549,8 +598,6 @@ function UpRegistros(grid) {
 function DownRegistros(grid) {
 
 	let data_array = [];
-
-
 
 	// Obtener todas las casillas de verificación de las filas
 	var checkboxes = grid.querySelectorAll('input[type=checkbox]');
@@ -666,10 +713,68 @@ function renderizarQuickCreate(grid) {
 }
 
 
+function renderizarEdit(grid) {
+
+	let data_array = [];
+
+	// Obtener todas las casillas de verificación de las filas
+	var checkboxes = grid.querySelectorAll('input[type=checkbox]');
+	// Iterar sobre todas las casillas de verificación y establecer su estado a igual que el checkbox de encabezado
+	for (var i = 0; i < checkboxes.length; i++) {
+		if (checkboxes[i].checked) data_array.push(checkboxes[i].value);
+	}
+
+	if (data_array.length > 0) {
+		url = grid.getAttribute("data-gridurl");
+		datafield = grid.getAttribute("data-field");
+		datavalue = grid.getAttribute("data-value");
+		pagesize = grid.getAttribute("data-page-size");
+		view = grid.getAttribute("data-view-id");
+		page = grid.getAttribute("data-page");
+		search_text = grid.querySelector("input[type='text']")?.value;
+		enabled = grid.getAttribute("data-enabled");
+
+		// Configurar los datos del filtro
+		var op_data = {
+			operation: "render_update",
+			enabled: enabled,
+			// Define tu filtro aquí, por ejemplo:
+			field: datafield,
+			value: datavalue,
+			pagesize: pagesize,
+			page: page,
+			view: view,
+			list: data_array,
+			search_text: search_text
+		};
+
+		// Realizar una solicitud fetch para obtener los datos del subgrid
+		fetch(url, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(op_data)
+		})
+			.then(response => response.text())
+			.then(data => {
+
+				mostrarQuickEdit(grid, data);
+
+			})
+			.catch(error => {
+				console.error('Error al cargar el subgrid:', error);
+
+			});
+	}
+
+}
+
 
 function mostrarQuickCreate(grid, data) {
 
-	document.getElementById('modal_form').style.display = "block";
+	var modalform = document.getElementById('modal_form');
+	modalform.style.display = "block";
 	content = document.getElementById('modal-form-content');
 	content.innerHTML = data;
 
@@ -680,7 +785,26 @@ function mostrarQuickCreate(grid, data) {
 
 		ejecutarQuickCreate(grid);
 	});
+	load_TynyMCE_controls(content);
 
+}
+
+
+function mostrarQuickEdit(grid, data) {
+
+	var modalform = document.getElementById('modal_form');
+	modalform.style.display = "block";
+	content = document.getElementById('modal-form-content');
+	content.innerHTML = data;
+
+	var btn = document.getElementById('acceptButton');
+
+	btn.disabled = false; //para no mandar dos veces el formulario
+	btn.addEventListener("click", function (event) {
+
+		ejecutarQuickEdit(grid);
+	});
+	load_TynyMCE_controls(content);
 }
 
 
@@ -690,8 +814,12 @@ function ejecutarQuickCreate(grid) {
 	btn.disabled = true;
 	var myform = document.getElementById('modal-form-data');
 
+	tinymce.triggerSave(); 
 
-	if (!validarFormulario(myform)) return;
+	if (!validarFormulario(myform)) {
+		btn.disabled = false;
+		return;
+	}
 	var formData = new FormData(myform);
 
 	url = grid.getAttribute("data-gridurl");
@@ -736,6 +864,75 @@ function ejecutarQuickCreate(grid) {
 			console.error('Error al cargar el subgrid:', error);
 			ocultarFormulario();
 
+		});
+
+}
+
+
+function ejecutarQuickEdit(grid) {
+	//debugger;
+	var btn = document.getElementById('acceptButton');
+	btn.disabled = true;
+	var myform = document.getElementById('modal-form-data');
+	tinymce.triggerSave(); 
+
+	let data_array = [];
+
+	// Obtener todas las casillas de verificación de las filas
+	var checkboxes = grid.querySelectorAll('input[type=checkbox]');
+	// Iterar sobre todas las casillas de verificación y establecer su estado a igual que el checkbox de encabezado
+	for (var i = 0; i < checkboxes.length; i++) {
+		if (checkboxes[i].checked) data_array.push(checkboxes[i].value);
+	}
+
+	if (!validarFormulario(myform)) {
+		btn.disabled = false;
+		return;
+	}
+	var formData = new FormData(myform);
+
+	url = grid.getAttribute("data-gridurl");
+	datafield = grid.getAttribute("data-field");
+	datavalue = grid.getAttribute("data-value");
+	pagesize = grid.getAttribute("data-page-size");
+	view = grid.getAttribute("data-view-id");
+	page = grid.getAttribute("data-page");
+	enabled = grid.getAttribute("data-enabled");
+	search_text = grid.querySelector("input[type='text']")?.value;
+
+	// Configurar los datos del filtro
+	var op_data = {
+		operation: "update",
+		enabled: enabled,
+		// Define tu filtro aquí, por ejemplo:
+		field: datafield,
+		value: datavalue,
+		pagesize: pagesize,
+		page: page,
+		view: view,
+		search_text: search_text,
+		list: data_array
+		//,form_data : formData
+	};
+	formData.append("op_data", JSON.stringify(op_data));
+
+
+	// Realizar una solicitud fetch para obtener los datos del subgrid
+	fetch(url, {
+		method: "POST",
+
+		body: formData
+	})
+		.then(response => response.text())
+		.then(data => {
+			console.log(data);
+			cargarPaginaSubgrid(grid, page);
+			ocultarFormulario();
+			sendEvent(grid, "AfterUpdate");
+		})
+		.catch(error => {
+			console.error('Error al cargar el subgrid:', error);
+			ocultarFormulario();
 		});
 
 }

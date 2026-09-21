@@ -1,16 +1,6 @@
 <?php 
+require dirname(__DIR__).'/autoload.php';
 
-
-require_once '../api/rest_api.php';
-include_once '../config.php';
-include_once '../utilities.php';
-include_once '../database.php';
-include_once '../classes/entity_manager.php';
-include_once '../classes/loginmanager.php';
-include_once '../classes/utility_traits.php';
-include_once '../classes/plugin_manager.php';
-include_once '../classes/form_manager.php';
-include_once '../classes/security_manager.php';
 
 class ProcessDispatcher extends RestApi {
 	use Messages;
@@ -135,21 +125,6 @@ class ProcessDispatcher extends RestApi {
            $this->return_error(500, $e->getMessage());
          }
     }
-
-    public function loadPlugins($entidad){
-		PluginManager::RegisterForm($this);
-		$base_dir = dirname(__DIR__, 1);
-		//añadimos los plugins registrados
-		$plugin_files = EntityManager::GetPluginFiles($entidad);
-		foreach ($plugin_files as $fichero){
-			
-			//if ($fichero['tipo']==0){
-				include $base_dir."/".$fichero['fichero'];
-			//}else{
-			//	eval ($fichero['code']);
-			//}
-		}	
-	}
 	
 }
 

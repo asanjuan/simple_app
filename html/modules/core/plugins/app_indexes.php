@@ -21,7 +21,7 @@ class my_new_plugin extends PluginInterface {
     	        
     	        
 	        } catch (PDOException $e) {
-				$this->showMessage("Error en la consulta: " . $e->getMessage());
+				$this->showError("Error en la consulta: " . $e->getMessage());
 			}
 	     
 	        
@@ -35,7 +35,7 @@ class my_new_plugin extends PluginInterface {
         	        $this->showMessage( "Indice creada ". $rel['name'] );
         	        
     	        } catch (PDOException $e) {
-    				$this->showMessage("Error en la consulta: " . $e->getMessage());
+    				$this->showError("Error en la consulta: " . $e->getMessage());
     			}   
 	        }
 	        
@@ -46,7 +46,7 @@ class my_new_plugin extends PluginInterface {
                 $this->showMessage( "Indice borrado ". $datos['name'] );
                 
 	        } catch (PDOException $e) {
-				$this->showMessage("Error en la consulta: " . $e->getMessage());
+				$this->showError("Error en la consulta: " . $e->getMessage());
 			}
 			
 	    } else if ($operation == "list_drop"){
@@ -58,7 +58,7 @@ class my_new_plugin extends PluginInterface {
                     $this->showMessage( "Indice borrado ". $rel['name'] );
                     
     	        } catch (PDOException $e) {
-    				$this->showMessage("Error en la consulta: " . $e->getMessage());
+    				$this->showError("Error en la consulta: " . $e->getMessage());
     			}
 	        }
 	    }

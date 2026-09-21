@@ -87,10 +87,15 @@
 		<?php
 		foreach ($this->messages as $msg ){
 			
-			echo '<div class="message flex-expand"> ' . t($msg) . '</div>';
+			echo '<div class="message flex-expand"> ' . ($msg) . '</div>';
 			
 		}
- ?>
+		foreach ($this->errors as $msg ){
+			
+			echo '<div class="message-error flex-expand"> ' . ($msg) . '</div>';
+			
+		}
+ 		?>
 
 	</div>
 
@@ -117,4 +122,19 @@
 <div class="form" id="custom"> <?php echo $custom_content ;  ?>  </div>
 <?php	
 	} // fin custom html
+  ?>
+
+  <?php
+	if (DebugLog::count() >0 ){
+	?>
+	<div class="form" id="custom">
+		<h3>Debug</h3>
+	<?php
+		
+		echo array2html( DebugLog::get() , "debug");
+
+	?>  
+	</div>
+	<?php	
+	} // fin debug html
   ?>

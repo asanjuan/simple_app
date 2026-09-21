@@ -11,11 +11,12 @@ class my_new_plugin extends PluginInterface {
 	public function preDuplicate($item, &$datos){ }
 	public function postDuplicate($item, $new_item){ }
 	
-	public function customContent($item){ 
-	   
-	   return print_graphic($item , "" , "", "Titulo del grafico");
-	   
+	public function customContent($item, $section){ 
 	    
+        if ($section == "vista_previa"){
+            return print_graphic($item , "" , "", "Titulo del grafico");
+        }
+	   
 	}
 	
 	public function setDefaultValues(&$datos){  }
@@ -24,7 +25,7 @@ class my_new_plugin extends PluginInterface {
 		
 	}
 	public function onCustomButton($operation, $item, $datos){ 
-		$this->showMessage("TEST");
+		
 	}
 	public function postUploadFile($file){ $this->showMessage("postUploadFile");}
 

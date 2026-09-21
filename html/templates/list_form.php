@@ -21,4 +21,21 @@
 			
 		</div>
 	</div>
+
+	<?php
+	if (DebugLog::count() >0 ){
+	?>
+	<div class="form" id="custom"> 
+		<h3>Debug</h3>
+	<?php
+		
+		echo array2html( DebugLog::get() ,"debug");
+
+	?>  
+	</div>
+	<?php	
+	} // fin debug html
+  ?>
+
 </div>	
+

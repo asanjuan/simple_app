@@ -18,7 +18,7 @@ class app_entities_plugin extends PluginInterface {
 	public function preDuplicate($item, &$datos){ }
 	public function postDuplicate($item, $new_item){ }
 	
-	public function customContent($item){ 
+	public function customContent($item, $section){ 
 		//trace ("hola");		
 	}
 	
@@ -43,7 +43,7 @@ class app_entities_plugin extends PluginInterface {
 				
 				
 			} catch (PDOException $e) {
-				$this->showMessage("Error al cargar la plantilla: " . $e->getMessage());
+				$this->showError("Error al cargar la plantilla: " . $e->getMessage());
 			}
 		}else if ($operation == "publish" ){
 			try{
@@ -70,7 +70,7 @@ class app_entities_plugin extends PluginInterface {
 				$this->showMessage("Plugin $fichero publicado.");
 				
 			} catch (PDOException $e) {
-				$this->showMessage("Error al publicar el plugin: " . $e->getMessage());
+				$this->showError("Error al publicar el plugin: " . $e->getMessage());
 			}
 		}else if ($operation == "load" ){
 			try{
@@ -88,7 +88,7 @@ class app_entities_plugin extends PluginInterface {
 				$this->showMessage("Ultima version de plugin recuperada");
 				
 			} catch (PDOException $e) {
-				$this->showMessage("Error al cargar la plantilla: " . $e->getMessage());
+				$this->showError("Error al cargar la plantilla: " . $e->getMessage());
 			}
 		}
 	}

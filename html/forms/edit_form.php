@@ -1,12 +1,14 @@
 <?php
-require_once 'classes/controller.php';
-require_once 'classes/security_manager.php';
-require_once 'classes/plugin_manager.php';
 
 login_test();
 
 $entidad = $_GET['controller'];
 $item = $_GET['item'];
+
+if (!isValidTableName($entidad) ){
+	die();
+}
+
 $entity_id = EntityManager::GetEntityId($entidad);
 
 $metadata = EntityManager::GetEntity($entidad);

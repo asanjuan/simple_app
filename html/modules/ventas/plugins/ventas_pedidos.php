@@ -8,6 +8,7 @@ class my_new_plugin_pedido extends PluginInterface {
 	
 	public function postUpdate($item, $datos){ }
 	public function postInsert($item, $datos){ 
+	    
 	    $datos['codigo'] = nextSequence("ventas_pedidos",date("Y"),$datos['id_empresa']);
 	    $datos['id']= $item;
 	    dbupdate("ventas_pedidos", $datos);
@@ -25,8 +26,30 @@ class my_new_plugin_pedido extends PluginInterface {
 		}
 	    
 	}
-	
-	public function customContent($item){ 	}
+	public function postTransition($item, $trans){
+	    
+	    $lib = EntityManager::GetLibraryFile("ventas_lib.php");
+        
+        if (!empty($lib)){
+            include_once(APP_ROOT.'/'.$lib[0]);
+            
+        }
+        
+	   try{
+	        
+    	    if ($trans['nombre']=="Facturar"){
+    	       
+    	        BL_Ventas::Facturar_Pedido($item);
+    	        
+    	    }
+	    
+	    }catch(Exception $err){
+	        SystemLog::error("error transition",json_encode($err));
+	        
+	    }
+	    
+	}
+	public function customContent($item,$seccion){ 	}
 	
 	public function setDefaultValues(&$datos){  }
 	

@@ -1,14 +1,5 @@
 <?php
-
-include_once 'config.php';
-include_once 'utilities.php';
-include_once 'database.php';
-require_once 'classes/loginmanager.php';
-include_once 'classes/entity_manager.php';
-include_once 'classes/form_manager.php';
-include_once 'classes/security_manager.php';
-include_once 'classes/report_manager.php';
-
+require_once 'autoload.php';
 require_once 'lib/mpdf/vendor/autoload.php';
 
 login_test();

@@ -1,10 +1,5 @@
 <?php
-include 'utilities.php';
-include 'database.php';
-include_once 'config.php';
-
-include 'classes/loginmanager.php';
-
+include 'autoload.php';
 
 $msg = "";
 $username = "";
@@ -32,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //exit;
     } else {
         $msg = "Usuario o contraseña incorrectos";
+        SystemLog::error($msg,"username: $username");
     }
 }
 

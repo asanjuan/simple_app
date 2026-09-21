@@ -1,15 +1,20 @@
 <?php
+include 'autoload.php';
+/*
+include_once 'classes/debug_manager.php';
 include_once  'utilities.php';
 include_once  'database.php';
+include_once 'config.php';
 
 include_once 'classes/loginmanager.php';
+*/
 
 $loginManager = new LoginManager();
 
-// Cerrar sesión.
+// Cerrar sesiï¿½n.
 $loginManager->logout();
 
-// Redirige a la página de inicio de sesión después de cerrar sesión.
+// Redirige a la pï¿½gina de inicio de sesiï¿½n despuï¿½s de cerrar sesiï¿½n.
 header('Location: login.php');
 exit;
 ?>

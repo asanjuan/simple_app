@@ -40,7 +40,12 @@
 <?php
 foreach ($this->messages as $msg ){
 	
-	echo '<div class="message"> ' . t($msg) . '</div>';
+	echo '<div class="message"> ' . ($msg) . '</div>';
+	
+}
+foreach ($this->errors as $msg ){
+			
+	echo '<div class="message-error flex-expand"> ' . ($msg) . '</div>';
 	
 }
  ?>

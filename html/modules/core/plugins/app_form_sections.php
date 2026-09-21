@@ -11,7 +11,7 @@ class my_new_plugin extends PluginInterface {
 	public function preDuplicate($item, &$datos){ }
 	public function postDuplicate($item, $new_item){ }
 	
-	public function customContent($item){ 
+	public function customContent($item, $section){ 
 		$html = "<h3>Controles de formulario</h3>";
 		$html .= print_grid('4CEB444996216FE37E38DE2C6C3D287A', "id_seccion", $item, "");
 

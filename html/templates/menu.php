@@ -9,7 +9,7 @@
 			<?php
 			foreach ($areas['items'] as $opt){ 
 			 ?>
-				<li class="<?php if ($opt['current']==true) echo "current_menu"; ?>" > <a href="<?= $opt['url'] ?>"> <i class="fas <?php if ($opt['icon']!="") echo $opt['icon']; else echo "fa-table-cells-large"; ?>"></i> <?= $opt['option'] ?> </a></li>
+				<li class="<?php if ($opt['current']==true) echo "current_menu"; ?>" > <a class="menuitem" href="<?= $opt['url'] ?>"> <i class="fas <?php if ($opt['icon']!="") echo $opt['icon']; else echo "fa-table-cells-large"; ?>"></i> <?= $opt['option'] ?> </a></li>
 			<?php 
 			}
 			?>

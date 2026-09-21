@@ -6,17 +6,28 @@ document.addEventListener("DOMContentLoaded", function () {
     if (sidebarHidden1 === '1') {
         sidebar1.classList.add('hidden'); //lo muestra oculto
     }else {
-		sidebar1.classList.toggle('hidden'); //muestra el sidebar. Por defecto, desde servidor se envía oculto.
+		sidebar1.classList.remove('hidden'); //muestra el sidebar. Por defecto, desde servidor se envía oculto.
 	}
 	
+    
+
     // Agregar funcionalidad para desplegar/ocultar submenús
     const submenuItems = document.querySelectorAll('.has-submenu');
     submenuItems.forEach(item => {
-    item.addEventListener('click', () => {
-        item.classList.toggle('active');
-        const subMenu = item.querySelector('.sub-menu');
-        //subMenu.style.display = subMenu.style.display === 'block' ? 'none' : 'block';
-    });
+        
+        var menuitems = item.querySelectorAll('a.menuitem');
+        menuitems.forEach( function (link)  {
+            link.addEventListener('click', (linkevent) => {
+                linkevent.stopPropagation();
+            });
+        });
+
+        item.addEventListener('click', (evt) => {
+            
+            item.classList.toggle('active');
+            const subMenu = item.querySelector('.sub-menu');
+            //subMenu.style.display = subMenu.style.display === 'block' ? 'none' : 'block';
+        });
     });
 
     // Agregar funcionalidad para desplegar el menú en dispositivos m??es

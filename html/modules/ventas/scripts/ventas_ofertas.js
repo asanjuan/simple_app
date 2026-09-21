@@ -7,6 +7,8 @@ function onload(){
     var grid = document.getElementById('grid_lineas');
     grid.addEventListener('AfterInsert',refrescarTotales);
     grid.addEventListener('OnDelete',refrescarTotales);
+    grid.addEventListener('OnDuplicate',refrescarTotales);
+    grid.addEventListener('AfterUpdate',refrescarTotales);
     
 }
 

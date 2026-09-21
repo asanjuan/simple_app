@@ -2,10 +2,13 @@
 /*** set the content type header ***/
 /*** Without this header, it wont work ***/
 header("Content-type: text/css");
-
+require dirname(dirname(__DIR__)).'/autoload.php';
+/*
+require '../../classes/debug_manager.php';
 require '../../config.php';
 require '../../utilities.php';
 require '../../database.php';
+*/
 ?>
 
 :root {

@@ -1,9 +1,5 @@
 <?php
 
-include_once 'config.php';
-
-
-
 class ConfigSingleton
 {
 	// Variable est�tica para almacenar la �nica instancia de la clase
@@ -206,10 +202,15 @@ function generarTablaHTML($result, $controller = "", $campo_id = "", $access_del
 	// Cabecera de la tabla con los nombres de las columnas
 	$html .= '<thead><tr>';
 	if ($campo_id != "" && isset($result[0][$campo_id])) {
-		$html .= '<th style="width:100px">';
-		if ($selectable) $html .= ' <input type="checkbox" name="select_all" onclick="seleccionarTodasLasFilas(\'' . $random_id . '\',this)">  ';
-		$html .= '</th>';
+		
+		if ($selectable) {
+			$html .= '<th width="40px">';
+			$html .= ' <input type="checkbox" class="modern-checkbox" name="select_all" onclick="seleccionarTodasLasFilas(\'' . $random_id . '\',this)">  ';
+			$html .= '</th>';
+			$html .= '<th width="40px"></th>';
+		}
 	}
+		
 	foreach ($result[0] as $columna => $valor) {
 		if ($campo_id != $columna) {
 			$html .= '<th>' . t($columna) . '</th>';
@@ -224,11 +225,17 @@ function generarTablaHTML($result, $controller = "", $campo_id = "", $access_del
 
 		if ($campo_id != "" && $controller != "" && isset($fila[$campo_id])) {
 
-			$html .= '<tr ondblclick="javascript:redirigir(\'' . build_URL_Controller_item($controller, $fila[$campo_id]) . '\')"><td>';
-			if ($selectable) $html .= '<input type="checkbox" name="elementos[]" value="' . $fila[$campo_id] . '"/>';
+			//$html .= '<tr ondblclick="javascript:abrirModal(\'' . build_URL_Controller_item($controller, $fila[$campo_id]) . '&focusmode=true&tabid='.newRandomID(4).'\',\'\',99,99)"><td>';
+			$html .= '<tr class="grid_row" data-controller="'.$controller.'" data-id="'.$fila[$campo_id].'"  ondblclick="javascript:redirigir(\'' . build_URL_Controller_item($controller, $fila[$campo_id]) .'\')">';
+			//$html .= '<tr class="grid_row" data-controller="'.$controller.'" data-id="'.$fila[$campo_id].'" >';
+			//$html .= '<tr><td>';
+			if ($selectable) $html .= '<td><input type="checkbox" class="modern-checkbox" name="elementos[]" value="' . $fila[$campo_id] . '"  /></td>';
 			//$html .= '<a href="'. build_URL_Controller_item($controller,$fila[$campo_id]) .'" class="boton-enlace"><img src="templates/img/lapiz-blog.svg" class="list-icon" /></a>';
-			$html .= '<a href="' . build_URL_Controller_item($controller, $fila[$campo_id]) . '" class="edit-btn"></a>';
-			$html .= '</td>';
+			$html .= '<td style="text-align:center"> <a href="' . build_URL_Controller_item($controller, $fila[$campo_id]) . '" class="boton-enlace"> <span style="font-size:14px;text-align:center"><i class="fa-solid fa-pen-to-square"></i><span>  </a></td>';
+			//$html .= '<i class="fa-solid fa-pen-to-square"></i> ';
+			
+			//$html .= '</td>';
+
 		} else {
 			$html .= '<tr>';
 		}
@@ -252,7 +259,7 @@ function generarTablaHTML($result, $controller = "", $campo_id = "", $access_del
 	}
 	$html .= '</tbody>';
 	$html .= '</table></div>';
-	$html .= '<script> addSortingTable(\'' . $random_id . '\'); </script>';
+	//$html .= '<script> addSortingTable(\'' . $random_id . '\'); </script>';
 	return $html;
 }
 
@@ -285,7 +292,8 @@ function generarTablaHTML_mail($result, $controller = "", $campo_id = "", $acces
 
 		if ($campo_id != "" && $controller != "" && isset($fila[$campo_id])) {
 
-			$html .= '<tr ondblclick="javascript:redirigir(\'' . build_URL_Controller_item($controller, $fila[$campo_id]) . '\')"><td>';
+			//$html .= '<tr ondblclick="javascript:redirigir(\'' . build_URL_Controller_item($controller, $fila[$campo_id]) . '\')"><td>';
+			$html .= '<tr><td>';
 			if ($selectable) $html .= '<input type="checkbox" name="elementos[]" value="' . $fila[$campo_id] . '"/>';
 			//$html .= '<a href="'. build_URL_Controller_item($controller,$fila[$campo_id]) .'" class="boton-enlace"><img src="templates/img/lapiz-blog.svg" class="list-icon" /></a>';
 			$html .= '<a href="' . build_URL_Controller_item($controller, $fila[$campo_id]) . '" >Ver en App</a>';
@@ -308,6 +316,47 @@ function generarTablaHTML_mail($result, $controller = "", $campo_id = "", $acces
 	$html .= '</tbody>';
 	$html .= '</table></div>';
 	$html .= '<script> addSortingTable(\'' . $random_id . '\'); </script>';
+	return $html;
+}
+
+
+//genera una tabla html a partir del resultado de una consulta a BD.
+function array2html($result, $css_class = "")
+{
+	if (empty($result)) {
+		return '';
+	}
+	
+	
+	$html = '<div class="table-container"><table class="'.$css_class.'" >';
+	// Cabecera de la tabla con los nombres de las columnas
+	$html .= '<thead><tr>';
+	
+	foreach ($result[0] as $columna => $valor) {
+		$html .= '<th>' . t($columna) . '</th>';
+	}
+	
+	$html .= '</tr></thead>';
+	$html .= '<tbody>';
+	// Contenido de la tabla con los valores de cada celda
+	foreach ($result as $fila) {
+
+		
+		$html .= '<tr>';
+		
+		foreach ($fila as $valor) {
+			if (is_color($valor)) {
+				$html .= '<td><span style="display: inline-block; width: 10px; height: 10px; background-color: ' . $valor . '; border-radius: 50%;"></span></td>';
+			} else {
+				$html .= '<td>' . ($valor) . '</td>';
+			}
+		}
+		
+		$html .= '</tr>';
+	}
+	$html .= '</tbody>';
+	$html .= '</table></div>';
+	
 	return $html;
 }
 
@@ -361,6 +410,7 @@ function generate_form_fields($estructura, $datos, $mostrar_calculados = true)
 		}
 		$disabled = (($campo["disabled"] == 1) ? "disabled" : "");
 		$required = (($campo["required"] == 1) ? "required" : "");
+		$checked = (($datos[$campo["dbcolumn"]]==1)? "checked" : "");
 
 		$val = htmlspecialchars($val, ENT_QUOTES);
 
@@ -380,6 +430,9 @@ function generate_form_fields($estructura, $datos, $mostrar_calculados = true)
 				//$html .= '<label ><strong>'.$campo["label"].'</strong></label>';
 				if (empty($campo["user_control"])) {
 					switch ($campo["type"]) {
+						case "bool":
+							$html .= '<label class="switch">  <input type="checkbox"  id="' . $campo["dbcolumn"] . '" name="' . $campo["dbcolumn"] .'" '. $checked .'  value="1">  <span class="slider"></span> </label>';
+							break;
 						case "int":
 							$html .= '<input ' . $disabled . ' ' . $required . '  type="number" id="' . $campo["dbcolumn"] . '" name="' . $campo["dbcolumn"] . '" value="' . $val . '" />';
 							break;
@@ -776,27 +829,31 @@ function calcular_formula_options($expresion, $datos)
 	if ($expresion == "") return $options;
 
 	// obtendremos una sql con variables del con el formato {campo} apuntando a alguno de los datos del formulario
-	if ($datos ){
+	if ($datos){
 		foreach ($datos as $campo => $valor) {
 
 			$expresion = str_replace("{" . $campo . "}", quote($valor), $expresion);
 		}
 		//trace($expresion);
 		if (str_contains($expresion, "{")) return $options; //no se han reemplazado todos los campos 
-							
-		try {
-
-			$data = query($expresion);
-			$options = array();
-			foreach($data as $record){
-				$v = array_values($record);
-				$options[] = array("value"=>$v[0], "description"=>$v[1]);
-			}
-		} catch (PDOException $e) {
-			trace("Error en la conexi�n: " . $e->getMessage());
-		}
-
+	} else  {
+		//trace($expresion);
+		if (str_contains($expresion, "{")) return $options; //no se han reemplazado todos los campos 
 	}
+	
+	try {
+
+		$data = query($expresion);
+		$options = array();
+		foreach($data as $record){
+			$v = array_values($record);
+			$options[] = array("value"=>$v[0], "description"=>$v[1]);
+		}
+	} catch (PDOException $e) {
+		trace("Error en la conexi�n: " . $e->getMessage());
+	}
+
+	
 	return $options;
 
 	
@@ -837,6 +894,11 @@ function sanitizeDecimal($input)
 
 	// Si se permiten decimales, utiliza FILTER_SANITIZE_NUMBER_FLOAT en lugar de FILTER_SANITIZE_NUMBER_INT
 	return filter_var($input, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+}
+
+function isValidTableName(string $tableName): bool
+{
+    return preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $tableName) === 1;
 }
 
 /*
@@ -1018,6 +1080,15 @@ function decypherMessageAES(string $encrypted, string $key): string
 }
 
 
+function dump($var){
+	$x = print_r($var,true);	
+	DebugLog::trace("<pre>$x</pre>");
+	
+}
+
+function trace($sql){
+	DebugLog::trace($sql);
+}
 
 class Mapping {
     private $fields = [];

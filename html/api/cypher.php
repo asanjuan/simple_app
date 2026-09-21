@@ -1,11 +1,14 @@
 <?php
 
+require dirname(__DIR__).'/autoload.php';
+
+/*
 require_once 'rest_api.php';
 include_once '../config.php';
 include_once '../utilities.php';
 include_once '../database.php';
 include_once '../classes/loginmanager.php';
-
+*/
 
 
 class CypherApi extends RestApi {

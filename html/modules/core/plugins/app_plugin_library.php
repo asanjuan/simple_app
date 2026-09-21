@@ -12,7 +12,7 @@ class app_entities_plugin extends PluginInterface {
 	}
 	public function postDuplicate($item, $new_item){ }
 	
-	public function customContent($item){ 
+	public function customContent($item, $section){ 
 				
 	}
 	
@@ -45,7 +45,7 @@ class app_entities_plugin extends PluginInterface {
 				$this->showMessage("Plugin $fichero publicado.");
 				
 			} catch (PDOException $e) {
-				$this->showMessage("Error al publicar el plugin: " . $e->getMessage());
+				$this->showError("Error al publicar el plugin: " . $e->getMessage());
 			}
 		}else if ($operation == "load" ){
 			try{
@@ -65,7 +65,7 @@ class app_entities_plugin extends PluginInterface {
 				$this->showMessage("Ultima version de codigo recuperada");
 				
 			} catch (PDOException $e) {
-				$this->showMessage("Error al cargar la plantilla: " . $e->getMessage());
+				$this->showError("Error al cargar la plantilla: " . $e->getMessage());
 			}
 		}
 	}
